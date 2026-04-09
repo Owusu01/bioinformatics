@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DNA Learning Adventure - Educational Game for Kids</title>
+
+<!-- THREE JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  overflow-x: hidden;
+}
+
+header {
+  text-align: center;
+  padding: 20px;
+  background: rgba(20, 28, 48, 0.9);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.5em;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+h1 i {
+  color: #2dd4bf;
+  margin-right: 10px;
+}
+
+.subtitle {
+  font-size: 1.2em;
+  margin-top: 10px;
+  opacity: 0.9;
+}
+
+.nav-buttons {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #1e2d4a 0%, #2c3a5a 100%);
+  border: 2px solid #4a5f8a;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: all 0.3s;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #2c3a5a 0%, #3a4a6a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button i {
+  font-size: 18px;
+}
+
+#score {
+  font-size: 24px;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  display: inline-block;
+}
+
+#score i {
+  color: #fbbf24;
+  margin-right: 8px;
+}
+
+.game-container {
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 900px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.sequence {
+  letter-spacing: 8px;
+  font-size: 24px;
+  margin: 20px;
+  word-break: break-all;
+  padding: 15px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+#cube-container {
+  width: 100%;
+  height: 500px;
+  margin-top: 30px;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Kids Learning Section */
+.learning-section {
+  text-align: center;
+  padding: 20px;
+}
+
+.learning-card {
+  background: rgba(255,255,255,0.15);
+  padding: 25px;
+  margin: 15px auto;
+  border-radius: 15px;
+  max-width: 700px;
+  backdrop-filter: blur(10px);
+}
+
+.learning-card h2 {
+  color: #fbbf24;
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.learning-card h2 i {
+  font-size: 1.2em;
+}
+
+.learning-card p {
+  font-size: 1.2em;
+  line-height: 1.6;
+}
+
+.base-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.base-card {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.base-card:hover {
+  transform: scale(1.1);
+}
+
+.base-a { background: #fb7185; }
+.base-t { background: #fbbf24; }
+.base-g { background: #2dd4bf; }
+.base-c { background: #a78bfa; }
+
+/* Icon List Styling */
+.icon-list {
+  text-align: left;
+  font-size: 1.1em;
+  line-height: 2.2;
+  list-style: none;
+  padding-left: 0;
+}
+
+.icon-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.icon-list li i {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.icon-list li i.fa-hospital { color: #fb7185; }
+.icon-list li i.fa-seedling { color: #22c55e; }
+.icon-list li i.fa-paw { color: #fbbf24; }
+.icon-list li i.fa-users { color: #60a5fa; }
+.icon-list li i.fa-flask { color: #a78bfa; }
+.icon-list li i.fa-magnifying-glass { color: #2dd4bf; }
+.icon-list li i.fa-virus { color: #f87171; }
+.icon-list li i.fa-pills { color: #34d399; }
+.icon-list li i.fa-rocket { color: #f472b6; }
+.icon-list li i.fa-globe { color: #38bdf8; }
+.icon-list li i.fa-robot { color: #c084fc; }
+.icon-list li i.fa-mobile-screen { color: #facc15; }
+.icon-list li i.fa-dna { color: #2dd4bf; }
+
+/* Computer DNA Section */
+.computer-dna-section {
+  padding: 30px 20px;
+}
+
+.coding-demo {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px auto;
+  max-width: 700px;
+  font-family: 'Courier New', monospace;
+  text-align: left;
+  overflow-x: auto;
+  border: 1px solid #333;
+}
+
+.code-line {
+  margin: 5px 0;
+  padding: 5px;
+}
+
+.code-comment {
+  color: #6a9955;
+}
+
+.code-keyword {
+  color: #569cd6;
+}
+
+.code-string {
+  color: #ce9178;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.comparison-item {
+  background: rgba(255,255,255,0.1);
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.comparison-item h3 {
+  color: #fbbf24;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.comparison-item h3 i {
+  font-size: 1.3em;
+}
+
+/* Interactive Quiz */
+.quiz-container {
+  background: rgba(255,255,255,0.1);
+  padding: 30px;
+  border-radius: 15px;
+  margin: 20px auto;
+  max-width: 700px;
+}
+
+.quiz-question {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.quiz-options {
+  display: grid;
+  gap: 10px;
+}
+
+.quiz-option {
+  padding: 15px;
+  background: rgba(255,255,255,0.2);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 1.1em;
+}
+
+.quiz-option:hover {
+  background: rgba(255,255,255,0.3);
+  border-color: #fbbf24;
+}
+
+.correct {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+}
+
+.incorrect {
+  background: #ef4444 !important;
+  border-color: #ef4444 !important;
+}
+
+.feedback {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feedback i {
+  font-size: 1.5em;
+}
+
+.achievement {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: linear-gradient(135deg, #fbbf24 0%, #fb7185 100%);
+  padding: 40px;
+  border-radius: 20px;
+  font-size: 1.8em;
+  font-weight: bold;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  z-index: 1000;
+  transition: transform 0.5s;
+  text-align: center;
+  color: #1a1a2e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.achievement i {
+  font-size: 2em;
+}
+
+.achievement.show {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.pair-display {
+  font-size: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.pair-display .pair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pair-display i {
+  color: rgba(255,255,255,0.7);
+}
+
+.impact-card {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 113, 133, 0.2) 100%);
+  border: 2px solid rgba(251, 191, 36, 0.5);
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: 1.8em; }
+  .subtitle { font-size: 1em; }
+  .sequence { font-size: 18px; letter-spacing: 4px; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .nav-buttons { flex-direction: column; align-items: center; }
+  button { width: 80%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fas fa-dna"></i> DNA Learning Adventure</h1>
+  <p class="subtitle">Discover How Computers Help Scientists Understand DNA!</p>
+  <div class="nav-buttons">
+    <button onclick="showSection('learn')"><i class="fas fa-book-open"></i> Learn DNA Basics</button>
+    <button onclick="showSection('computer')"><i class="fas fa-laptop-code"></i> Computer & DNA</button>
+    <button onclick="showSection('blast')"><i class="fas fa-gamepad"></i> BLAST Game</button>
+    <button onclick="showSection('cube')"><i class="fas fa-cube"></i> 3D DNA Game</button>
+    <button onclick="showSection('quiz')"><i class="fas fa-trophy"></i> Take Quiz</button>
+  </div>
+  <div id="score"><i class="fas fa-star"></i> Score: 0 | Level: Beginner</div>
+</header>
+
+<!-- Learning Section -->
+<div id="learn-section" class="game-container learning-section">
+  <div class="learning-card">
+    <h2><i class="fas fa-dna"></i> What is DNA?</h2>
+    <p>DNA is like a recipe book inside every living thing! It tells your body how to grow, what color eyes you'll have, and makes you unique!</p>
+    <p>DNA is made of 4 special letters called <strong>bases</strong>:</p>
+  </div>
+  
+  <div class="base-info">
+    <div class="base-card base-a" onclick="speakBase('A', 'Adenine')">
+      A<br><small>Adenine</small>
+    </div>
+    <div class="base-card base-t" onclick="speakBase('T', 'Thymine')">
+      T<br><small>Thymine</small>
+    </div>
+    <div class="base-card base-g" onclick="speakBase('G', 'Guanine')">
+      G<br><small>Guanine</small>
+    </div>
+    <div class="base-card base-c" onclick="speakBase('C', 'Cytosine')">
+      C<br><small>Cytosine</small>
+    </div>
+  </div>
+
+  <div class="learning-card">
+    <h2><i class="fas fa-link"></i> DNA Pairs</h2>
+    <p>DNA bases always pair up like best friends:</p>
+    <div class="pair-display">
+      <div class="pair">
+        <span style="color: #fb7185; font-weight: bold;">A</span>
+        <i class="fas fa-arrows-left-right"></i>
+        <span style="color: #fbbf24; font-weight: bold;">T</span>
+      </div>
+      <div class="pair">
+        <span style="color: #2dd4bf; font-weight: bold;">G</span>
+        <i class="fas fa-arrows-left-right"></i>
+        <span style="color: #a78bfa; font-weight: bold;">C</span>
+      </div>
+    </div>
+    <p style="margin-top: 15px;">This is called <strong>base pairing</strong>! It's like a zipper that holds DNA together.</p>
+  </div>
+
+  <div class="learning-card">
+    <h2><i class="fas fa-star"></i> Why DNA Matters</h2>
+    <p>DNA helps doctors and scientists:</p>
+    <ul class="icon-list">
+      <li><i class="fas fa-hospital"></i> Find cures for diseases</li>
+      <li><i class="fas fa-seedling"></i> Grow better food</li>
+      <li><i class="fas fa-paw"></i> Protect endangered animals</li>
+      <li><i class="fas fa-users"></i> Understand families and ancestry</li>
+      <li><i class="fas fa-flask"></i> Discover new medicines</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Computer & DNA Section -->
+<div id="computer-section" class="game-container computer-dna-section hidden">
+  <div class="learning-card">
+    <h2><i class="fas fa-laptop-code"></i> How Computers Help Scientists Study DNA</h2>
+    <p>Human DNA has 3 BILLION letters! That's like 3,000 books. Computers help scientists read and understand all this information super fast!</p>
+  </div>
+
+  <div class="comparison-grid">
+    <div class="comparison-item">
+      <h3><i class="fas fa-dna"></i> DNA Code</h3>
+      <p style="font-size: 1.3em; letter-spacing: 3px;">ATGCATGC</p>
+      <p>Made of: A, T, G, C</p>
+      <p>Found in: All living things</p>
+    </div>
+    <div class="comparison-item">
+      <h3><i class="fas fa-database"></i> Computer Code</h3>
+      <p style="font-size: 1.3em; letter-spacing: 3px;">01001010</p>
+      <p>Made of: 0, 1 (Binary)</p>
+      <p>Found in: All computers</p>
+    </div>
+  </div>
+
+  <div class="learning-card">
+    <h2><i class="fas fa-magnifying-glass"></i> What is BLAST?</h2>
+    <p><strong>BLAST</strong> stands for <strong>Basic Local Alignment Search Tool</strong></p>
+    <p>It's like a super-fast search engine for DNA! Scientists use it to:</p>
+    <ul class="icon-list">
+      <li><i class="fas fa-magnifying-glass"></i> Find matching DNA patterns</li>
+      <li><i class="fas fa-dna"></i> Compare genes from different animals</li>
+      <li><i class="fas fa-virus"></i> Identify bacteria and viruses</li>
+      <li><i class="fas fa-pills"></i> Develop new medicines</li>
+    </ul>
+  </div>
+
+  <div class="coding-demo">
+    <div class="code-line"><span class="code-comment">// How a computer reads DNA</span></div>
+    <div class="code-line"><span class="code-keyword">let</span> dna = <span class="code-string">"ATGCATGC"</span>;</div>
+    <div class="code-line"><span class="code-keyword">let</span> pattern = <span class="code-string">"ATG"</span>;</div>
+    <div class="code-line"></div>
+    <div class="code-line"><span class="code-comment">// Search for pattern in DNA</span></div>
+    <div class="code-line"><span class="code-keyword">function</span> findPattern(dna, pattern) {</div>
+    <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">return</span> dna.indexOf(pattern);</div>
+    <div class="code-line">}</div>
+    <div class="code-line"></div>
+    <div class="code-line"><span class="code-comment">// Result: Found at position 0!</span></div>
+  </div>
+
+  <div class="learning-card impact-card">
+    <h2><i class="fas fa-globe"></i> Real-World Impact</h2>
+    <p style="font-size: 1.2em; line-height: 1.8;">
+      During COVID-19, scientists used computer programs like BLAST to study the virus DNA and create vaccines in record time! 
+      Computers analyzed millions of DNA sequences to understand the virus and save lives.
+    </p>
+    <div style="font-size: 3em; margin-top: 15px;">
+      <i class="fas fa-syringe" style="color: #60a5fa;"></i>
+    </div>
+  </div>
+
+  <div class="learning-card">
+    <h2><i class="fas fa-user-graduate"></i> Cool DNA Computer Facts</h2>
+    <ul class="icon-list">
+      <li><i class="fas fa-rocket"></i> Computers can compare DNA in seconds (humans would take years!)</li>
+      <li><i class="fas fa-globe"></i> Scientists worldwide share DNA data through the internet</li>
+      <li><i class="fas fa-robot"></i> AI helps predict what genes do</li>
+      <li><i class="fas fa-mobile-screen"></i> Your smartphone has enough power to analyze DNA!</li>
+      <li><i class="fas fa-dna"></i> We share 96% of our DNA with chimpanzees (computers found this!)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- BLAST Game Section -->
+<div id="blast-section" class="game-container hidden"></div>
+
+<!-- 3D Cube Section -->
+<div id="cube-section" class="game-container hidden">
+  <div id="cube-container"></div>
+  <div style="text-align: center; margin-top: 20px;">
+    <p style="font-size: 1.2em;"><i class="fas fa-hand-pointer" style="margin-right: 8px;"></i> Click anywhere to rotate the DNA bases!</p>
+    <p>Each color represents a different DNA base:</p>
+    <div class="base-info" style="max-width: 600px; margin: 20px auto;">
+      <div class="base-card base-a">A</div>
+      <div class="base-card base-t">T</div>
+      <div class="base-card base-g">G</div>
+      <div class="base-card base-c">C</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz Section -->
+<div id="quiz-section" class="game-container hidden">
+  <div class="quiz-container">
+    <div id="quiz-content"></div>
+  </div>
+</div>
+
+<!-- Achievement Popup -->
+<div id="achievement" class="achievement">
+  <i id="achievement-icon" class="fas fa-star"></i>
+  <span id="achievement-text"></span>
+</div>
+
+<script>
+let score = 0;
+let level = 'Beginner';
+const BASES = ['A','T','G','C'];
+const COMP = {A:'T',T:'A',G:'C',C:'G'};
+
+// Quiz Questions
+const quizQuestions = [
+  {
+    question: "What are the 4 bases in DNA?",
+    options: ["A, B, C, D", "A, T, G, C", "1, 2, 3, 4", "W, X, Y, Z"],
+    correct: 1,
+    explanation: "DNA is made of 4 bases: Adenine (A), Thymine (T), Guanine (G), and Cytosine (C)!"
+  },
+  {
+    question: "Which base pairs with A (Adenine)?",
+    options: ["G", "C", "T", "A"],
+    correct: 2,
+    explanation: "A pairs with T! Think of them as best friends who always stick together."
+  },
+  {
+    question: "Which base pairs with G (Guanine)?",
+    options: ["A", "T", "C", "G"],
+    correct: 2,
+    explanation: "G pairs with C! They're another perfect pair in DNA."
+  },
+  {
+    question: "What does BLAST help scientists do?",
+    options: ["Play games", "Search for DNA patterns", "Make explosions", "Cook food"],
+    correct: 1,
+    explanation: "BLAST is a computer tool that helps scientists search through millions of DNA sequences!"
+  },
+  {
+    question: "How many DNA letters does a human have?",
+    options: ["1,000", "1 million", "3 billion", "Infinite"],
+    correct: 2,
+    explanation: "Humans have about 3 BILLION DNA letters! That's why we need computers to study them."
+  },
+  {
+    question: "Why do scientists use computers for DNA?",
+    options: ["It's too much data for humans alone", "Computers are fun", "They don't", "Only for games"],
+    correct: 0,
+    explanation: "DNA has billions of letters! Computers can analyze this huge amount of data in seconds."
+  }
+];
+
+let currentQuiz = 0;
+
+// Section Navigation
+function showSection(section) {
+  document.getElementById('learn-section').classList.add('hidden');
+  document.getElementById('computer-section').classList.add('hidden');
+  document.getElementById('blast-section').classList.add('hidden');
+  document.getElementById('cube-section').classList.add('hidden');
+  document.getElementById('quiz-section').classList.add('hidden');
+  
+  destroy3D();
+  
+  if(section === 'learn') {
+    document.getElementById('learn-section').classList.remove('hidden');
+  } else if(section === 'computer') {
+    document.getElementById('computer-section').classList.remove('hidden');
+  } else if(section === 'blast') {
+    document.getElementById('blast-section').classList.remove('hidden');
+    startBlast();
+  } else if(section === 'cube') {
+    document.getElementById('cube-section').classList.remove('hidden');
+    startCube();
+  } else if(section === 'quiz') {
+    document.getElementById('quiz-section').classList.remove('hidden');
+    startQuiz();
+  }
+}
+
+// Speak base name
+function speakBase(letter, name) {
+  showAchievement(`${letter} is for ${name}!`, 'fa-volume-high');
+  if('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(`${letter} stands for ${name}`);
+    speechSynthesis.speak(utterance);
+  }
+}
+
+// Achievement popup
+function showAchievement(text, icon = 'fa-star') {
+  const ach = document.getElementById('achievement');
+  const achIcon = document.getElementById('achievement-icon');
+  const achText = document.getElementById('achievement-text');
+  
+  achIcon.className = 'fas ' + icon;
+  achText.textContent = text;
+  ach.classList.add('show');
+  
+  setTimeout(() => {
+    ach.classList.remove('show');
+  }, 2000);
+}
+
+/* ===== QUIZ SYSTEM ===== */
+function startQuiz() {
+  currentQuiz = 0;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  if(currentQuiz >= quizQuestions.length) {
+    document.getElementById('quiz-content').innerHTML = `
+      <h2 style="color: #fbbf24; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <i class="fas fa-award"></i> Quiz Complete!
+      </h2>
+      <p style="font-size: 1.5em;">You've learned so much about DNA and computers!</p>
+      <p style="font-size: 1.2em;"><i class="fas fa-star" style="color: #fbbf24;"></i> Final Score: ${score}</p>
+      <button onclick="startQuiz()"><i class="fas fa-redo"></i> Take Quiz Again</button>
+    `;
+    if(score > 100) {
+      level = 'DNA Expert';
+      showAchievement('You are a DNA Expert!', 'fa-trophy');
+    } else if(score > 50) {
+      level = 'DNA Explorer';
+    }
+    updateScore();
+    return;
+  }
+
+  const q = quizQuestions[currentQuiz];
+  let html = `
+    <div class="quiz-question">
+      <i class="fas fa-question-circle" style="color: #60a5fa; margin-right: 10px;"></i>
+      Question ${currentQuiz + 1}: ${q.question}
+    </div>
+    <div class="quiz-options">
+  `;
+  
+  q.options.forEach((opt, i) => {
+    html += `<div class="quiz-option" onclick="checkAnswer(${i})">${opt}</div>`;
+  });
+  
+  html += `</div><div id="feedback" class="feedback" style="display:none;"></div>`;
+  document.getElementById('quiz-content').innerHTML = html;
+}
+
+function checkAnswer(selected) {
+  const q = quizQuestions[currentQuiz];
+  const options = document.querySelectorAll('.quiz-option');
+  const feedback = document.getElementById('feedback');
+  
+  options.forEach(opt => opt.style.pointerEvents = 'none');
+  
+  if(selected === q.correct) {
+    options[selected].classList.add('correct');
+    feedback.innerHTML = `<i class="fas fa-check-circle"></i> Correct! ${q.explanation}`;
+    feedback.style.background = 'rgba(16, 185, 129, 0.3)';
+    feedback.style.display = 'flex';
+    score += 10;
+    updateScore();
+    showAchievement('+10 Points!', 'fa-check');
+  } else {
+    options[selected].classList.add('incorrect');
+    options[q.correct].classList.add('correct');
+    feedback.innerHTML = `<i class="fas fa-times-circle"></i> Not quite! ${q.explanation}`;
+    feedback.style.background = 'rgba(239, 68, 68, 0.3)';
+    feedback.style.display = 'flex';
+  }
+  
+  setTimeout(() => {
+    currentQuiz++;
+    renderQuiz();
+  }, 3000);
+}
+
+/* ===== 2D BLAST MODE ===== */
+let blast = {};
+
+function randomDNA(n){
+  let s = '';
+  for(let i=0;i<n;i++){
+    s += BASES[Math.floor(Math.random()*4)];
+  }
+  return s;
+}
+
+function startBlast(){
+  const container = document.getElementById('blast-section');
+  container.innerHTML = '';
+
+  let genome = randomDNA(40);
+  let pattern = randomDNA(4);
+  let pos = Math.floor(Math.random() * (genome.length - pattern.length));
+
+  genome = genome.slice(0,pos) + pattern + genome.slice(pos + pattern.length);
+
+  blast = {genome, pattern, pos};
+
+  renderBlast();
+}
+
+function renderBlast(){
+  const container = document.getElementById('blast-section');
+  
+  let positions = [];
+  for(let i = 0; i < 4; i++) {
+    let p = Math.floor(Math.random() * 36);
+    if(i === 0) p = blast.pos;
+    positions.push(p);
+  }
+  positions = positions.sort(() => Math.random() - 0.5);
+  
+  container.innerHTML = `
+    <div class="learning-card">
+      <h2><i class="fas fa-magnifying-glass"></i> BLAST Search Game</h2>
+      <p>You're a scientist using BLAST to find a DNA pattern!</p>
+      <div class="sequence">${blast.genome}</div>
+      <h3 style="color: #fbbf24;">
+        <i class="fas fa-crosshairs" style="margin-right: 8px;"></i>
+        Find this pattern: <span style="letter-spacing: 8px;">${blast.pattern}</span>
+      </h3>
+      <p>Click the correct position where the pattern starts:</p>
+    </div>
+  `;
+
+  const btnContainer = document.createElement('div');
+  btnContainer.style.display = 'flex';
+  btnContainer.style.flexWrap = 'wrap';
+  btnContainer.style.justifyContent = 'center';
+  btnContainer.style.gap = '10px';
+  btnContainer.style.marginTop = '20px';
+
+  positions.forEach(p => {
+    let btn = document.createElement('button');
+    btn.innerHTML = `<i class="fas fa-location-dot"></i> Position ${p}`;
+    btn.style.fontSize = '18px';
+    btn.style.padding = '15px 30px';
+    btn.onclick = () => checkBlast(p);
+    btnContainer.appendChild(btn);
+  });
+  
+  container.appendChild(btnContainer);
+}
+
+function checkBlast(g){
+  if(g === blast.pos){
+    score += 15;
+    showAchievement('Perfect Match! +15 points', 'fa-bullseye');
+    setTimeout(startBlast, 1500);
+  } else {
+    showAchievement(`Try again! Correct position: ${blast.pos}`, 'fa-xmark');
+    setTimeout(startBlast, 2000);
+  }
+  updateScore();
+}
+
+/* ===== 3D DNA CUBE MODE ===== */
+let scene, camera, renderer, cubes = [];
+let animationId;
+
+function startCube(){
+  destroy3D();
+  init3D();
+  createCube();
+  animate();
+}
+
+function init3D(){
+  const container = document.getElementById('cube-container');
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a1a2e);
+  
+  camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+
+  renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+
+  // Add lighting
+  const light = new THREE.PointLight(0xffffff, 1, 100);
+  light.position.set(0, 0, 10);
+  scene.add(light);
+
+  const ambientLight = new THREE.AmbientLight(0x404040);
+  scene.add(ambientLight);
+
+  camera.position.z = 8;
+
+  window.addEventListener('resize', () => {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  });
+}
+
+function createCube(){
+  let dna = randomDNA(6);
+  cubes = [];
+  dna.split('').forEach((base, i) => {
+    let color = {A:0xfb7185,T:0xfbbf24,G:0x2dd4bf,C:0xa78bfa}[base];
+    let geometry = new THREE.BoxGeometry(1,1,1);
+    let material = new THREE.MeshPhongMaterial({
+      color: color,
+      shininess: 100,
+      specular: 0x444444
+    });
+    let cube = new THREE.Mesh(geometry, material);
+
+    cube.position.x = (i - 2.5) * 1.5;
+    cube.userData = {base: base, correct: COMP[base]};
+
+    // Add edge
+    const edges = new THREE.EdgesGeometry(geometry);
+    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
+    cube.add(line);
+
+    scene.add(cube);
+    cubes.push(cube);
+  });
+}
+
+function rotateCube(){
+  cubes.forEach(c => {
+    c.rotation.x += Math.PI / 2;
+    c.rotation.y += Math.PI / 2;
+  });
+  score += 2;
+  updateScore();
+}
+
+function animate(){
+  animationId = requestAnimationFrame(animate);
+  
+  // Auto-rotate slightly
+  cubes.forEach(c => {
+    c.rotation.y += 0.005;
+  });
+  
+  renderer.render(scene, camera);
+}
+
+function destroy3D(){
+  const container = document.getElementById('cube-container');
+  if(renderer){
+    cancelAnimationFrame(animationId);
+    container.innerHTML = '';
+    renderer.dispose();
+    renderer = null;
+  }
+}
+
+// Click handler for cube rotation
+document.addEventListener('click', (e) => {
+  if(!document.getElementById('cube-section').classList.contains('hidden')) {
+    rotateCube();
+  }
+});
+
+function updateScore(){
+  if(score > 100) level = 'DNA Expert';
+  else if(score > 50) level = 'DNA Explorer';
+  else if(score > 20) level = 'DNA Student';
+  
+  document.getElementById('score').innerHTML = `<i class="fas fa-star"></i> Score: ${score} | Level: ${level}`;
+}
+
+// Initialize - show learning section by default
+window.onload = () => {
+  showSection('learn');
+};
+</script>
+
+</body>
+</html>
+
