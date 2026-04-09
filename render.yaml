@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: dna-learning-adventure
+    runtime: static
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
