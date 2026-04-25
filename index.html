@@ -6,1092 +6,744 @@
 <title>DNA Learning Adventure - Educational Game for Kids</title>
 <meta name="description" content="An interactive educational game teaching kids about DNA, BLAST search tools, and how computers help scientists understand genetics.">
 <meta name="theme-color" content="#667eea">
-<meta property="og:title" content="DNA Learning Adventure">
-<meta property="og:description" content="Learn about DNA, BLAST, and bioinformatics through interactive games!">
-<meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>">
-
-<!-- THREE JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-<!-- Font Awesome Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  background-attachment: fixed;
-  min-height: 100vh;
-  color: white;
-  overflow-x: hidden;
-}
-
-header {
-  text-align: center;
-  padding: 20px;
-  background: rgba(20, 28, 48, 0.9);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-h1 {
-  margin: 0;
-  font-size: 2.5em;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-h1 i {
-  color: #2dd4bf;
-  margin-right: 10px;
-}
-
-.subtitle {
-  font-size: 1.2em;
-  margin-top: 10px;
-  opacity: 0.9;
-}
-
-.nav-buttons {
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
-
-button {
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #1e2d4a 0%, #2c3a5a 100%);
-  border: 2px solid #4a5f8a;
-  color: white;
-  cursor: pointer;
-  font-size: 16px;
-  border-radius: 8px;
-  transition: all 0.3s;
-  font-weight: bold;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-button:hover {
-  background: linear-gradient(135deg, #2c3a5a 0%, #3a4a6a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-button i {
-  font-size: 18px;
-}
-
-#score {
-  font-size: 24px;
-  margin-top: 15px;
-  padding: 10px 20px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 20px;
-  display: inline-block;
-}
-
-#score i {
-  color: #fbbf24;
-  margin-right: 8px;
-}
-
-.game-container {
-  margin: 20px auto;
-  padding: 20px;
-  max-width: 900px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 15px;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
-
-.sequence {
-  letter-spacing: 8px;
-  font-size: 24px;
-  margin: 20px;
-  word-break: break-all;
-  padding: 15px;
-  background: rgba(0,0,0,0.3);
-  border-radius: 10px;
-  font-weight: bold;
-}
-
-#cube-container {
-  width: 100%;
-  height: 500px;
-  margin-top: 30px;
-  border-radius: 15px;
-  overflow: hidden;
-}
-
-.hidden {
-  display: none;
-}
-
-/* Kids Learning Section */
-.learning-section {
-  text-align: center;
-  padding: 20px;
-}
-
-.learning-card {
-  background: rgba(255,255,255,0.15);
-  padding: 25px;
-  margin: 15px auto;
-  border-radius: 15px;
-  max-width: 700px;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-
-.learning-card h2 {
-  color: #fbbf24;
-  font-size: 1.8em;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.learning-card h2 i {
-  font-size: 1.2em;
-}
-
-.learning-card p {
-  font-size: 1.2em;
-  line-height: 1.6;
-}
-
-.base-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
-  margin: 20px 0;
-}
-
-.base-card {
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 1.5em;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.3s;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-.base-card:hover {
-  transform: scale(1.1);
-}
-
-.base-a { background: #fb7185; }
-.base-t { background: #fbbf24; }
-.base-g { background: #2dd4bf; }
-.base-c { background: #a78bfa; }
-
-/* Icon List Styling */
-.icon-list {
-  text-align: left;
-  font-size: 1.1em;
-  line-height: 2.2;
-  list-style: none;
-  padding-left: 0;
-}
-
-.icon-list li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-}
-
-.icon-list li i {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,255,255,0.2);
-  border-radius: 50%;
-  font-size: 14px;
-}
-
-.icon-list li i.fa-hospital { color: #fb7185; }
-.icon-list li i.fa-seedling { color: #22c55e; }
-.icon-list li i.fa-paw { color: #fbbf24; }
-.icon-list li i.fa-users { color: #60a5fa; }
-.icon-list li i.fa-flask { color: #a78bfa; }
-.icon-list li i.fa-magnifying-glass { color: #2dd4bf; }
-.icon-list li i.fa-virus { color: #f87171; }
-.icon-list li i.fa-pills { color: #34d399; }
-.icon-list li i.fa-rocket { color: #f472b6; }
-.icon-list li i.fa-globe { color: #38bdf8; }
-.icon-list li i.fa-robot { color: #c084fc; }
-.icon-list li i.fa-mobile-screen { color: #facc15; }
-.icon-list li i.fa-dna { color: #2dd4bf; }
-
-/* Computer DNA Section */
-.computer-dna-section {
-  padding: 30px 20px;
-}
-
-.coding-demo {
-  background: #1e1e1e;
-  color: #d4d4d4;
-  padding: 20px;
-  border-radius: 10px;
-  margin: 20px auto;
-  max-width: 700px;
-  font-family: 'Courier New', monospace;
-  text-align: left;
-  overflow-x: auto;
-  border: 1px solid #333;
-}
-
-.code-line {
-  margin: 5px 0;
-  padding: 5px;
-}
-
-.code-comment {
-  color: #6a9955;
-}
-
-.code-keyword {
-  color: #569cd6;
-}
-
-.code-string {
-  color: #ce9178;
-}
-
-.comparison-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin: 20px 0;
-}
-
-.comparison-item {
-  background: rgba(255,255,255,0.1);
-  padding: 25px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.comparison-item h3 {
-  color: #fbbf24;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.comparison-item h3 i {
-  font-size: 1.3em;
-}
-
-/* Interactive Quiz */
-.quiz-container {
-  background: rgba(255,255,255,0.1);
-  padding: 30px;
-  border-radius: 15px;
-  margin: 20px auto;
-  max-width: 700px;
-}
-
-.quiz-question {
-  font-size: 1.5em;
-  margin-bottom: 20px;
-}
-
-.quiz-options {
-  display: grid;
-  gap: 10px;
-}
-
-.quiz-option {
-  padding: 15px;
-  background: rgba(255,255,255,0.2);
-  border: 2px solid transparent;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 1.1em;
-}
-
-.quiz-option:hover {
-  background: rgba(255,255,255,0.3);
-  border-color: #fbbf24;
-}
-
-.correct {
-  background: #10b981 !important;
-  border-color: #10b981 !important;
-}
-
-.incorrect {
-  background: #ef4444 !important;
-  border-color: #ef4444 !important;
-}
-
-.feedback {
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 1.2em;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.feedback i {
-  font-size: 1.5em;
-}
-
-.achievement {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  background: linear-gradient(135deg, #fbbf24 0%, #fb7185 100%);
-  padding: 40px;
-  border-radius: 20px;
-  font-size: 1.8em;
-  font-weight: bold;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-  z-index: 1000;
-  transition: transform 0.5s;
-  text-align: center;
-  color: #1a1a2e;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-}
-
-.achievement i {
-  font-size: 2em;
-}
-
-.achievement.show {
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.pair-display {
-  font-size: 1.5em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.pair-display .pair {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pair-display i {
-  color: rgba(255,255,255,0.7);
-}
-
-.impact-card {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 113, 133, 0.2) 100%);
-  border: 2px solid rgba(251, 191, 36, 0.5);
-}
-
-footer {
-  text-align: center;
-  padding: 30px 20px;
-  margin-top: 20px;
-  background: rgba(20, 28, 48, 0.85);
-  font-size: 0.95em;
-  opacity: 0.85;
-}
-
-footer p {
-  margin: 0;
-}
-
-footer p + p {
-  margin-top: 8px;
-}
-
-footer .footer-icon-dna {
-  color: #2dd4bf;
-  margin-right: 8px;
-}
-
-footer .footer-icon-flask {
-  color: #a78bfa;
-  margin-right: 6px;
-}
-
-/* ===== BLAST button container (used in JS) ===== */
-.blast-btn-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.blast-btn {
-  font-size: 18px;
-  padding: 15px 30px;
-}
-
-/* ===== RESPONSIVE ===== */
-
-/* Tablet */
-@media (max-width: 1024px) {
-  .game-container {
-    margin: 15px;
-    padding: 15px;
-  }
-  .learning-card {
-    padding: 20px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  header { padding: 15px 10px; }
-  h1 { font-size: 1.8em; }
-  .subtitle { font-size: 1em; }
-
-  #score { font-size: 18px; padding: 8px 15px; }
-
-  .nav-buttons { flex-direction: column; align-items: center; }
-  button { width: 85%; justify-content: center; }
-
-  .game-container { margin: 10px; padding: 15px; }
-
-  .sequence { font-size: 16px; letter-spacing: 3px; margin: 10px; padding: 10px; }
-
-  .learning-card { padding: 15px; }
-  .learning-card h2 { font-size: 1.4em; }
-  .learning-card p { font-size: 1em; }
-
-  .base-info { grid-template-columns: repeat(2, 1fr); }
-
-  .comparison-grid { grid-template-columns: 1fr; }
-  .comparison-item { padding: 15px; }
-
-  .quiz-container { padding: 15px; }
-  .quiz-question { font-size: 1.2em; }
-  .quiz-option { padding: 12px; font-size: 1em; }
-
-  .achievement {
-    padding: 25px;
-    font-size: 1.2em;
-    width: 85vw;
-    max-width: 340px;
-  }
-
-  #cube-container { height: 280px; }
-
-  .blast-btn { width: 80%; justify-content: center; }
-
-  .icon-list { font-size: 1em; line-height: 2; }
-  .icon-list li { gap: 10px; }
-}
-
-/* Small phones */
-@media (max-width: 480px) {
-  h1 { font-size: 1.3em; }
-  .subtitle { font-size: 0.88em; }
-
-  button { width: 95%; font-size: 14px; padding: 10px 14px; }
-  button i { font-size: 15px; }
-
-  .learning-card h2 { font-size: 1.15em; flex-wrap: wrap; }
-
-  .pair-display { font-size: 1.2em; gap: 10px; }
-
-  .quiz-question { font-size: 1.05em; }
-
-  .achievement { font-size: 1em; padding: 18px; }
-
-  .coding-demo { font-size: 0.82em; padding: 12px; }
-
-  .blast-btn { width: 92%; font-size: 15px; padding: 12px 16px; }
-}
+:root {
+  --bg:#0d0f1a;--surface:rgba(255,255,255,0.06);--surface2:rgba(255,255,255,0.1);
+  --border:rgba(255,255,255,0.12);--a:#ff5e7d;--t:#fbbf24;--g:#2dd4bf;--c:#a78bfa;
+  --accent:#38bdf8;--text:#e2e8f0;--muted:#94a3b8;--success:#10b981;--danger:#ef4444;
+  --mono:'Space Mono',monospace;--sans:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(56,189,248,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:-200px;left:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(167,139,250,.12) 0%,transparent 70%);pointer-events:none;z-index:0}
+header{position:relative;z-index:10;text-align:center;padding:28px 20px 20px;background:rgba(13,15,26,.92);border-bottom:1px solid var(--border);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+h1{font-size:clamp(1.6em,4vw,2.8em);font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--accent) 0%,var(--c) 60%,var(--a) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h1 .icon-wrap{-webkit-text-fill-color:initial;color:var(--g);margin-right:10px}
+.subtitle{color:var(--muted);font-size:clamp(.85em,1.8vw,1.05em);margin-top:8px;font-weight:400}
+.nav-buttons{margin-top:18px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+button{padding:10px 20px;background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:14px;border-radius:8px;transition:all .25s;font-weight:600;font-family:var(--sans);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+button:hover{background:var(--surface2);border-color:var(--accent);color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 16px rgba(56,189,248,.2)}
+button.active{background:linear-gradient(135deg,rgba(56,189,248,.2),rgba(167,139,250,.2));border-color:var(--accent);color:var(--accent)}
+button i{font-size:15px}
+#score{font-size:15px;margin-top:14px;padding:8px 18px;background:var(--surface);border:1px solid var(--border);border-radius:20px;display:inline-block;font-family:var(--mono);letter-spacing:1px}
+#score i{color:var(--t);margin-right:6px}
+.game-container{position:relative;z-index:5;margin:24px auto;padding:28px;max-width:920px;background:rgba(13,15,26,.7);border:1px solid var(--border);border-radius:20px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.hidden{display:none!important}
+.learning-card{background:var(--surface);padding:24px;margin:16px auto;border-radius:14px;max-width:720px;border:1px solid var(--border)}
+.learning-card h2{color:var(--t);font-size:clamp(1.1em,2.5vw,1.6em);margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:10px}
+.learning-card p{font-size:clamp(.95em,1.8vw,1.1em);line-height:1.7;color:var(--text)}
+.sequence{font-family:var(--mono);letter-spacing:6px;font-size:clamp(14px,2.5vw,22px);margin:18px;word-break:break-all;padding:14px 18px;background:rgba(0,0,0,.4);border-radius:10px;border:1px solid var(--border)}
+.base-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:18px 0}
+.base-card{padding:18px;border-radius:12px;text-align:center;font-size:1.4em;font-weight:700;cursor:pointer;transition:transform .3s,box-shadow .3s;box-shadow:0 4px 12px rgba(0,0,0,.3);font-family:var(--mono)}
+.base-card:hover{transform:scale(1.08);box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.base-a{background:linear-gradient(135deg,#ff5e7d,#ff9a9e);color:#1a0a10}
+.base-t{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1a1000}
+.base-g{background:linear-gradient(135deg,#2dd4bf,#06b6d4);color:#001a18}
+.base-c{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
+.icon-list{text-align:left;font-size:1em;line-height:2;list-style:none}
+.icon-list li{display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.icon-list li:last-child{border-bottom:none}
+.icon-list li i{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--surface2);border-radius:8px;font-size:13px;flex-shrink:0}
+.pair-display{font-size:1.5em;display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;font-family:var(--mono)}
+.pair-display .pair{display:flex;align-items:center;gap:10px}
+.pair-display i{color:var(--muted);font-size:.7em}
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+.comparison-item{background:var(--surface);padding:22px;border-radius:12px;text-align:center;border:1px solid var(--border)}
+.comparison-item h3{color:var(--t);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+.coding-demo{background:#0d1117;color:#c9d1d9;padding:20px;border-radius:12px;margin:18px auto;max-width:720px;font-family:var(--mono);font-size:clamp(12px,1.6vw,14px);text-align:left;overflow-x:auto;border:1px solid #30363d;line-height:1.8}
+.code-comment{color:#6a9955}.code-keyword{color:#569cd6}.code-string{color:#ce9178}.code-fn{color:#dcdcaa}.code-num{color:#b5cea8}
+.impact-card{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,113,133,.1));border-color:rgba(251,191,36,.3)}
+.mut-inputs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+@media(max-width:640px){.mut-inputs{grid-template-columns:1fr}}
+.mut-input-group{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.mut-input-group label{display:block;font-size:.85em;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-family:var(--mono)}
+.gene-tag{font-size:.8em;padding:2px 8px;border-radius:20px;margin-left:6px;font-family:var(--sans);text-transform:none;letter-spacing:0}
+.tag-ref{background:rgba(45,212,191,.2);color:var(--g)}.tag-test{background:rgba(239,68,68,.2);color:var(--danger)}
+.gene-input{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:clamp(13px,2vw,17px);letter-spacing:4px;padding:12px;border-radius:8px;text-transform:uppercase;transition:border-color .2s;resize:vertical;min-height:70px}
+.gene-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(56,189,248,.1)}
+.quick-examples{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.example-btn{font-size:12px;padding:4px 10px;border-radius:20px;font-family:var(--mono);letter-spacing:1px;border-color:var(--c);color:var(--c)}
+.example-btn:hover{background:rgba(167,139,250,.15);color:var(--c);border-color:var(--c);transform:none;box-shadow:none}
+.analyze-btn{width:100%;padding:16px;font-size:1.1em;border-radius:12px;justify-content:center;background:linear-gradient(135deg,rgba(56,189,248,.2),rgba(167,139,250,.2));border-color:var(--accent);color:var(--accent);margin-top:6px}
+.analyze-btn:hover{background:linear-gradient(135deg,rgba(56,189,248,.35),rgba(167,139,250,.35));transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.25)}
+.alignment-viewer{background:#0d1117;border:1px solid #30363d;border-radius:12px;padding:20px;margin-top:20px;overflow-x:auto}
+.alignment-title{font-family:var(--mono);font-size:.8em;color:var(--muted);letter-spacing:2px;margin-bottom:14px;text-transform:uppercase}
+.aln-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.aln-label{font-family:var(--mono);font-size:.8em;color:var(--muted);width:70px;flex-shrink:0}
+.aln-seq{font-family:var(--mono);font-size:clamp(14px,2vw,18px);letter-spacing:5px;display:flex;flex-wrap:wrap;gap:2px}
+.base-char{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:5px;font-weight:700;transition:transform .2s}
+.base-char:hover{transform:scale(1.2)}
+.bc-A{background:rgba(255,94,125,.25);color:var(--a);border:1px solid rgba(255,94,125,.4)}
+.bc-T{background:rgba(251,191,36,.25);color:var(--t);border:1px solid rgba(251,191,36,.4)}
+.bc-G{background:rgba(45,212,191,.25);color:var(--g);border:1px solid rgba(45,212,191,.4)}
+.bc-C{background:rgba(167,139,250,.25);color:var(--c);border:1px solid rgba(167,139,250,.4)}
+.bc-gap{background:rgba(148,163,184,.1);color:var(--muted);border:1px dashed rgba(148,163,184,.3)}
+.bc-mutated{background:rgba(239,68,68,.35)!important;color:#fff!important;border-color:var(--danger)!important;box-shadow:0 0 8px rgba(239,68,68,.5)}
+.mut-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px}
+.mut-stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.mut-stat-card .stat-num{font-size:2.2em;font-weight:800;font-family:var(--mono);line-height:1}
+.mut-stat-card .stat-label{font-size:.78em;color:var(--muted);margin-top:5px;text-transform:uppercase;letter-spacing:1px}
+.stat-total{color:var(--accent)}.stat-match{color:var(--success)}.stat-sub{color:var(--t)}.stat-ins{color:var(--c)}.stat-del{color:var(--danger)}
+.mut-list{margin-top:18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.mut-list-header{display:grid;grid-template-columns:70px 90px 1fr 1fr 1fr;padding:10px 16px;background:var(--surface2);font-size:.78em;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--mono)}
+.mut-list-row{display:grid;grid-template-columns:70px 90px 1fr 1fr 1fr;padding:10px 16px;border-top:1px solid var(--border);font-size:.92em;transition:background .2s}
+.mut-list-row:hover{background:var(--surface2)}
+.mut-type-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:20px;font-size:.78em;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.badge-sub{background:rgba(251,191,36,.2);color:var(--t);border:1px solid rgba(251,191,36,.4)}
+.badge-ins{background:rgba(167,139,250,.2);color:var(--c);border:1px solid rgba(167,139,250,.4)}
+.badge-del{background:rgba(239,68,68,.2);color:var(--danger);border:1px solid rgba(239,68,68,.4)}
+.no-mutations{text-align:center;padding:30px;color:var(--success);font-size:1.3em;font-weight:700}
+.no-mutations i{font-size:2.5em;display:block;margin-bottom:10px}
+.identity-bar-wrap{margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.identity-bar-label{display:flex;justify-content:space-between;font-size:.88em;margin-bottom:8px;color:var(--muted)}
+.identity-bar-label span:last-child{font-weight:700;color:var(--text);font-family:var(--mono)}
+.identity-bar-track{height:12px;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden}
+.identity-bar-fill{height:100%;border-radius:20px;transition:width .8s ease}
+
+/* ══════════════════════════════════════════
+   IMPACT DETECTIVE
+══════════════════════════════════════════ */
+.impact-header{text-align:center;margin-bottom:28px}
+.impact-header h2{font-size:clamp(1.5em,3.5vw,2.2em);font-weight:800;background:linear-gradient(135deg,#f97316,#ec4899,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px;margin-bottom:8px}
+.impact-header p{color:var(--muted);font-size:.95em;line-height:1.6}
+.impact-score-banner{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.isb-pill{display:flex;align-items:center;gap:8px;padding:7px 16px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:.82em}
+.isb-pill i{font-size:1em}
+.impact-progress{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 26px;flex-wrap:wrap}
+.imp-dot{width:13px;height:13px;border-radius:50%;background:var(--surface2);border:2px solid var(--border);transition:all .4s}
+.imp-dot.done-correct{background:var(--success);border-color:var(--success);box-shadow:0 0 7px rgba(16,185,129,.6)}
+.imp-dot.done-wrong{background:var(--danger);border-color:var(--danger);box-shadow:0 0 7px rgba(239,68,68,.6)}
+.imp-dot.current{background:var(--t);border-color:var(--t);box-shadow:0 0 10px rgba(251,191,36,.7);transform:scale(1.35)}
+.case-card{background:linear-gradient(135deg,rgba(15,18,35,.96),rgba(20,24,44,.96));border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:26px;margin-bottom:26px;position:relative;overflow:hidden}
+.case-card::before{content:'';position:absolute;top:-60px;right:-60px;width:190px;height:190px;border-radius:50%;opacity:.07;pointer-events:none}
+.case-card.emb::before{background:#38bdf8}.case-card.env::before{background:#2dd4bf}.case-card.gen::before{background:#a78bfa}
+.case-number{font-family:var(--mono);font-size:.7em;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.case-patient{display:flex;align-items:flex-start;gap:18px;margin-bottom:18px}
+.patient-avatar{width:68px;height:68px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:2em;flex-shrink:0;border:2px solid rgba(255,255,255,.1)}
+.patient-info h3{font-size:1.1em;font-weight:700;margin-bottom:5px;color:var(--text)}
+.patient-info p{font-size:.92em;color:var(--muted);line-height:1.55}
+.case-seq-block{background:rgba(0,0,0,.45);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin:14px 0;font-family:var(--mono)}
+.csb-label{font-size:.7em;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.csb-seqs{display:flex;flex-direction:column;gap:7px}
+.csb-row{display:flex;align-items:center;gap:10px}
+.csb-tag{font-size:.7em;padding:2px 8px;border-radius:9px;font-weight:700;flex-shrink:0;width:44px;text-align:center}
+.csb-ref{background:rgba(45,212,191,.2);color:var(--g)}.csb-test{background:rgba(239,68,68,.2);color:var(--danger)}
+.csb-bases{display:flex;flex-wrap:wrap;gap:3px;font-size:clamp(12px,1.8vw,15px)}
+.csb-b{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:4px;font-weight:700}
+.bA{color:var(--a)}.bT{color:var(--t)}.bG{color:var(--g)}.bC{color:var(--c)}
+.bMut{background:rgba(239,68,68,.32)!important;border:1px solid var(--danger)!important;color:#fff!important;box-shadow:0 0 6px rgba(239,68,68,.4)}
+.bc-gap2{color:var(--muted)}
+.case-clues{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.clue-tag{padding:5px 13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:20px;font-size:.82em;color:var(--text);display:flex;align-items:center;gap:6px}
+.clue-tag span{font-size:1.1em}
+.choice-label{text-align:center;margin-bottom:12px;font-size:.82em;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:6px}
+@media(max-width:560px){.choice-grid{grid-template-columns:1fr}}
+.choice-btn{padding:20px 14px;border-radius:15px;background:var(--surface);border:2px solid var(--border);color:var(--text);cursor:pointer;transition:all .3s cubic-bezier(.34,1.4,.64,1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;font-family:var(--sans);font-size:.95em;font-weight:700;text-align:center;line-height:1.3;white-space:normal;min-height:105px}
+.choice-btn:hover{transform:translateY(-4px) scale(1.03)}
+.emb-btn{border-color:rgba(56,189,248,.35)}.emb-btn:hover{background:rgba(56,189,248,.12);border-color:var(--accent);box-shadow:0 8px 26px rgba(56,189,248,.22)}
+.env-btn{border-color:rgba(45,212,191,.35)}.env-btn:hover{background:rgba(45,212,191,.12);border-color:var(--g);box-shadow:0 8px 26px rgba(45,212,191,.22)}
+.gen-btn{border-color:rgba(167,139,250,.35)}.gen-btn:hover{background:rgba(167,139,250,.12);border-color:var(--c);box-shadow:0 8px 26px rgba(167,139,250,.22)}
+.choice-icon-wrap{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.55em;transition:transform .3s}
+.choice-btn:hover .choice-icon-wrap{transform:scale(1.18) rotate(-4deg)}
+.emb-btn .choice-icon-wrap{background:rgba(56,189,248,.14)}.env-btn .choice-icon-wrap{background:rgba(45,212,191,.14)}.gen-btn .choice-icon-wrap{background:rgba(167,139,250,.14)}
+.choice-sub{font-size:.72em;font-weight:400;color:var(--muted);margin-top:2px}
+
+/* ── FEEDBACK OVERLAY ── */
+.fb-overlay{position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .3s}
+.fb-overlay.show{opacity:1;pointer-events:all}
+.fb-backdrop{position:absolute;inset:0;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);transition:background .3s}
+.fb-overlay.correct .fb-backdrop{background:rgba(2,24,14,.84)}
+.fb-overlay.wrong   .fb-backdrop{background:rgba(24,2,8,.84)}
+.fb-panel{position:relative;z-index:2;text-align:center;padding:38px 30px;border-radius:26px;max-width:470px;width:90%;border:2px solid;transform:scale(.55) translateY(50px);transition:transform .44s cubic-bezier(.34,1.56,.64,1);background:rgba(13,15,26,.97)}
+.fb-overlay.show .fb-panel{transform:scale(1) translateY(0)}
+.fb-overlay.correct .fb-panel{border-color:var(--success);box-shadow:0 0 60px rgba(16,185,129,.28)}
+.fb-overlay.wrong   .fb-panel{border-color:var(--danger);box-shadow:0 0 60px rgba(239,68,68,.28)}
+.fb-cluster{position:relative;width:120px;height:120px;margin:0 auto 18px}
+.fb-ring{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.correct .fb-ring{background:radial-gradient(circle,rgba(16,185,129,.22),rgba(16,185,129,.04));border:2px solid rgba(16,185,129,.45)}
+.wrong   .fb-ring{background:radial-gradient(circle,rgba(239,68,68,.22),rgba(239,68,68,.04));border:2px solid rgba(239,68,68,.38)}
+.fb-main{font-size:4em;line-height:1;filter:drop-shadow(0 0 14px currentColor);animation:fbPop .5s cubic-bezier(.34,1.8,.64,1) both}
+.correct .fb-main{color:var(--success)}.wrong .fb-main{color:var(--danger)}
+.fb-sat{position:absolute;font-size:1.55em;opacity:0;animation:fbSat .6s ease-out both}
+.fb-sat.p1{top:-8px;right:-2px;animation-delay:.14s}
+.fb-sat.p2{bottom:-4px;left:0;animation-delay:.24s}
+.fb-sat.p3{top:12px;left:-16px;animation-delay:.34s}
+.fb-sat.p4{bottom:8px;right:-14px;animation-delay:.44s}
+@keyframes fbPop{0%{transform:scale(0) rotate(-18deg);opacity:0}60%{transform:scale(1.18) rotate(4deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes fbSat{0%{transform:scale(0);opacity:0}60%{transform:scale(1.22);opacity:1}100%{transform:scale(1);opacity:1}}
+.fb-verdict{font-size:1.65em;font-weight:800;letter-spacing:-1px;margin-bottom:9px}
+.correct .fb-verdict{color:var(--success)}.wrong .fb-verdict{color:var(--danger)}
+.fb-explain{font-size:.9em;color:var(--muted);line-height:1.65;margin-bottom:16px;padding:0 4px}
+.fb-reveal{display:none;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.28);border-radius:11px;padding:13px;margin-bottom:16px;font-size:.87em;color:#6ee7b7;text-align:left}
+.fb-reveal.on{display:block}
+.fb-reveal strong{color:var(--success);display:block;margin-bottom:3px}
+.fb-badges{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.fb-badge{display:flex;flex-direction:column;align-items:center;gap:4px}
+.fb-badge-icon{font-size:2.6em;line-height:1;animation:fbSat .5s ease both;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.fb-badge-lbl{font-size:.68em;color:var(--muted);text-align:center;max-width:62px;line-height:1.3}
+.fb-next{width:100%;padding:13px;font-size:1em;border-radius:11px;justify-content:center;border-color:var(--accent);color:var(--accent);background:rgba(56,189,248,.1)}
+.fb-next:hover{background:rgba(56,189,248,.2);transform:translateY(-2px);box-shadow:0 6px 18px rgba(56,189,248,.22)}
+
+/* complete screen */
+.complete-wrap{text-align:center;padding:16px}
+.complete-trophy{font-size:5em;display:block;margin-bottom:14px;animation:trophyIn 1s cubic-bezier(.34,1.6,.64,1) both}
+@keyframes trophyIn{0%{transform:scale(0) rotate(-12deg);opacity:0}70%{transform:scale(1.14) rotate(3deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.complete-wrap h2{font-size:clamp(1.55em,3.5vw,2.3em);font-weight:800;background:linear-gradient(135deg,var(--t),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+.complete-stars{display:flex;justify-content:center;gap:8px;font-size:2.4em;margin:14px 0}
+.complete-stat-row{display:flex;justify-content:center;gap:13px;flex-wrap:wrap;margin:18px 0}
+.csr-item{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px 20px;text-align:center;min-width:90px}
+.csr-num{font-size:2.2em;font-weight:800;font-family:var(--mono);line-height:1}
+.csr-lbl{font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.restart-btn{padding:13px 30px;font-size:1em;border-radius:11px;border-color:var(--t);color:var(--t);background:rgba(251,191,36,.1);margin-top:8px}
+.restart-btn:hover{background:rgba(251,191,36,.2);transform:translateY(-2px)}
+
+/* toast */
+.achievement{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:linear-gradient(135deg,#fbbf24,#fb7185);padding:36px 48px;border-radius:20px;font-size:1.6em;font-weight:800;box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:1000;transition:transform .4s cubic-bezier(.34,1.56,.64,1);text-align:center;color:#1a1a2e;display:flex;flex-direction:column;align-items:center;gap:12px}
+.achievement i{font-size:2em}
+.achievement.show{transform:translate(-50%,-50%) scale(1)}
+footer{position:relative;z-index:5;text-align:center;padding:28px 20px;margin-top:20px;background:rgba(13,15,26,.9);border-top:1px solid var(--border);color:var(--muted);font-size:.9em;line-height:1.8}
+@media(max-width:768px){.game-container{margin:12px;padding:16px}.comparison-grid{grid-template-columns:1fr}.mut-list-header,.mut-list-row{grid-template-columns:50px 85px 1fr}.mut-list-header span:nth-child(4),.mut-list-header span:nth-child(5),.mut-list-row span:nth-child(4),.mut-list-row span:nth-child(5){display:none}.fb-cluster{width:96px;height:96px}.fb-main{font-size:3em}}
+@media(max-width:480px){.nav-buttons button{font-size:13px;padding:9px 14px}.achievement{padding:20px 24px;font-size:1.1em;width:88vw}.choice-btn{min-height:88px;padding:14px 10px}}
 </style>
 </head>
 <body>
 
 <header>
-  <h1><i class="fas fa-dna"></i> DNA Learning Adventure</h1>
-  <p class="subtitle">Discover How Computers Help Scientists Understand DNA!</p>
+  <h1><span class="icon-wrap">🧬</span> DNA Learning Adventure</h1>
+  <p class="subtitle">Discover How Computers Help Scientists Understand DNA — and Detect Mutations in Your Community!</p>
   <div class="nav-buttons">
-    <button onclick="showSection('learn')"><i class="fas fa-book-open"></i> Learn DNA Basics</button>
-    <button onclick="showSection('computer')"><i class="fas fa-laptop-code"></i> Computer & DNA</button>
-    <button onclick="showSection('blast')"><i class="fas fa-gamepad"></i> BLAST Game</button>
-    <button onclick="showSection('cube')"><i class="fas fa-cube"></i> 3D DNA Game</button>
-    <button onclick="showSection('quiz')"><i class="fas fa-trophy"></i> Take Quiz</button>
+    <button onclick="showSection('learn')" id="btn-learn"><i class="fas fa-book-open"></i> DNA Basics</button>
+    <button onclick="showSection('computer')" id="btn-computer"><i class="fas fa-laptop-code"></i> Computer &amp; DNA</button>
+    <button onclick="showSection('mutation')" id="btn-mutation"><i class="fas fa-microscope"></i> Mutation Detector</button>
+    <button onclick="showSection('impact')" id="btn-impact"><i class="fas fa-magnifying-glass-chart"></i> Impact Detective</button>
   </div>
   <div id="score"><i class="fas fa-star"></i> Score: 0 | Level: Beginner</div>
 </header>
 
-<!-- Learning Section -->
-<div id="learn-section" class="game-container learning-section">
+<!-- LEARN -->
+<div id="learn-section" class="game-container">
   <div class="learning-card">
     <h2><i class="fas fa-dna"></i> What is DNA?</h2>
-    <p>DNA is like a recipe book inside every living thing! It tells your body how to grow, what color eyes you'll have, and makes you unique!</p>
-    <p>DNA is made of 4 special letters called <strong>bases</strong>:</p>
+    <p>DNA is like a recipe book inside every living thing! It tells your body how to grow, what color eyes you'll have, and makes you <strong>uniquely you</strong>!</p>
+    <p style="margin-top:10px;">DNA is made of 4 special letters called <strong>bases</strong>. Click each one to learn more:</p>
   </div>
-  
   <div class="base-info">
-    <div class="base-card base-a" onclick="speakBase('A', 'Adenine')">
-      A<br><small>Adenine</small>
-    </div>
-    <div class="base-card base-t" onclick="speakBase('T', 'Thymine')">
-      T<br><small>Thymine</small>
-    </div>
-    <div class="base-card base-g" onclick="speakBase('G', 'Guanine')">
-      G<br><small>Guanine</small>
-    </div>
-    <div class="base-card base-c" onclick="speakBase('C', 'Cytosine')">
-      C<br><small>Cytosine</small>
-    </div>
+    <div class="base-card base-a" onclick="speakBase('A','Adenine')">A<br><small style="font-size:.5em;font-weight:400;">Adenine</small></div>
+    <div class="base-card base-t" onclick="speakBase('T','Thymine')">T<br><small style="font-size:.5em;font-weight:400;">Thymine</small></div>
+    <div class="base-card base-g" onclick="speakBase('G','Guanine')">G<br><small style="font-size:.5em;font-weight:400;">Guanine</small></div>
+    <div class="base-card base-c" onclick="speakBase('C','Cytosine')">C<br><small style="font-size:.5em;font-weight:400;">Cytosine</small></div>
   </div>
-
   <div class="learning-card">
     <h2><i class="fas fa-link"></i> DNA Pairs</h2>
-    <p>DNA bases always pair up like best friends:</p>
-    <div class="pair-display">
-      <div class="pair">
-        <span style="color: #fb7185; font-weight: bold;">A</span>
-        <i class="fas fa-arrows-left-right"></i>
-        <span style="color: #fbbf24; font-weight: bold;">T</span>
-      </div>
-      <div class="pair">
-        <span style="color: #2dd4bf; font-weight: bold;">G</span>
-        <i class="fas fa-arrows-left-right"></i>
-        <span style="color: #a78bfa; font-weight: bold;">C</span>
-      </div>
+    <p>Bases always pair like best friends — this is called <strong>base pairing</strong>!</p>
+    <div class="pair-display" style="margin-top:16px;">
+      <div class="pair"><span style="color:var(--a);font-weight:700;">A</span><i class="fas fa-arrows-left-right"></i><span style="color:var(--t);font-weight:700;">T</span></div>
+      <div class="pair"><span style="color:var(--g);font-weight:700;">G</span><i class="fas fa-arrows-left-right"></i><span style="color:var(--c);font-weight:700;">C</span></div>
     </div>
-    <p style="margin-top: 15px;">This is called <strong>base pairing</strong>! It's like a zipper that holds DNA together.</p>
+    <p style="margin-top:14px;">It's like a zipper that holds the two strands of DNA together.</p>
   </div>
-
   <div class="learning-card">
     <h2><i class="fas fa-star"></i> Why DNA Matters</h2>
-    <p>DNA helps doctors and scientists:</p>
     <ul class="icon-list">
-      <li><i class="fas fa-hospital"></i> Find cures for diseases</li>
-      <li><i class="fas fa-seedling"></i> Grow better food</li>
-      <li><i class="fas fa-paw"></i> Protect endangered animals</li>
-      <li><i class="fas fa-users"></i> Understand families and ancestry</li>
-      <li><i class="fas fa-flask"></i> Discover new medicines</li>
+      <li><i class="fas fa-hospital" style="color:var(--a);"></i> Find cures for diseases</li>
+      <li><i class="fas fa-seedling" style="color:#22c55e;"></i> Grow better food</li>
+      <li><i class="fas fa-paw" style="color:var(--t);"></i> Protect endangered animals</li>
+      <li><i class="fas fa-users" style="color:var(--accent);"></i> Understand families and ancestry</li>
+      <li><i class="fas fa-flask" style="color:var(--c);"></i> Discover new medicines</li>
     </ul>
   </div>
 </div>
 
-<!-- Computer & DNA Section -->
-<div id="computer-section" class="game-container computer-dna-section hidden">
+<!-- COMPUTER -->
+<div id="computer-section" class="game-container hidden">
   <div class="learning-card">
     <h2><i class="fas fa-laptop-code"></i> How Computers Help Scientists Study DNA</h2>
-    <p>Human DNA has 3 BILLION letters! That's like 3,000 books. Computers help scientists read and understand all this information super fast!</p>
+    <p>Human DNA has <strong>3 BILLION</strong> letters — that's like 3,000 thick books! Computers help scientists read and understand all this information in seconds.</p>
   </div>
-
   <div class="comparison-grid">
-    <div class="comparison-item">
-      <h3><i class="fas fa-dna"></i> DNA Code</h3>
-      <p style="font-size: 1.3em; letter-spacing: 3px;">ATGCATGC</p>
-      <p>Made of: A, T, G, C</p>
-      <p>Found in: All living things</p>
-    </div>
-    <div class="comparison-item">
-      <h3><i class="fas fa-database"></i> Computer Code</h3>
-      <p style="font-size: 1.3em; letter-spacing: 3px;">01001010</p>
-      <p>Made of: 0, 1 (Binary)</p>
-      <p>Found in: All computers</p>
-    </div>
+    <div class="comparison-item"><h3><i class="fas fa-dna"></i> DNA Code</h3><p style="font-family:var(--mono);font-size:1.3em;letter-spacing:3px;color:var(--g);">ATGCATGC</p><p>Made of: A, T, G, C</p><p>Found in: All living things</p></div>
+    <div class="comparison-item"><h3><i class="fas fa-database"></i> Computer Code</h3><p style="font-family:var(--mono);font-size:1.3em;letter-spacing:3px;color:var(--accent);">01001010</p><p>Made of: 0 and 1 (Binary)</p><p>Found in: All computers</p></div>
   </div>
-
   <div class="learning-card">
     <h2><i class="fas fa-magnifying-glass"></i> What is BLAST?</h2>
-    <p><strong>BLAST</strong> stands for <strong>Basic Local Alignment Search Tool</strong></p>
-    <p>It's like a super-fast search engine for DNA! Scientists use it to:</p>
-    <ul class="icon-list">
-      <li><i class="fas fa-magnifying-glass"></i> Find matching DNA patterns</li>
-      <li><i class="fas fa-dna"></i> Compare genes from different animals</li>
-      <li><i class="fas fa-virus"></i> Identify bacteria and viruses</li>
-      <li><i class="fas fa-pills"></i> Develop new medicines</li>
+    <p><strong>BLAST</strong> — <em>Basic Local Alignment Search Tool</em> — is like a super-fast search engine for DNA.</p>
+    <ul class="icon-list" style="margin-top:12px;">
+      <li><i class="fas fa-magnifying-glass" style="color:var(--g);"></i> Find matching DNA patterns</li>
+      <li><i class="fas fa-dna" style="color:var(--accent);"></i> Compare genes from different animals</li>
+      <li><i class="fas fa-virus" style="color:var(--a);"></i> Identify bacteria and viruses</li>
+      <li><i class="fas fa-pills" style="color:#34d399;"></i> Develop new medicines</li>
     </ul>
   </div>
-
   <div class="coding-demo">
-    <div class="code-line"><span class="code-comment">// How a computer reads DNA</span></div>
-    <div class="code-line"><span class="code-keyword">let</span> dna = <span class="code-string">"ATGCATGC"</span>;</div>
-    <div class="code-line"><span class="code-keyword">let</span> pattern = <span class="code-string">"ATG"</span>;</div>
-    <div class="code-line"></div>
-    <div class="code-line"><span class="code-comment">// Search for pattern in DNA</span></div>
-    <div class="code-line"><span class="code-keyword">function</span> findPattern(dna, pattern) {</div>
-    <div class="code-line">&nbsp;&nbsp;<span class="code-keyword">return</span> dna.indexOf(pattern);</div>
-    <div class="code-line">}</div>
-    <div class="code-line"></div>
-    <div class="code-line"><span class="code-comment">// Result: Found at position 0!</span></div>
+<span class="code-comment">// How a computer reads DNA — JavaScript</span>
+<span class="code-keyword">let</span> dna = <span class="code-string">"ATGCATGCGGTA"</span>;
+<span class="code-keyword">let</span> pattern = <span class="code-string">"ATG"</span>;
+<span class="code-keyword">function</span> <span class="code-fn">blastSearch</span>(dna, pattern) {
+  <span class="code-keyword">const</span> positions = [];
+  <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-num">0</span>; i &lt;= dna.length - pattern.length; i++) {
+    <span class="code-keyword">if</span> (dna.slice(i, i + pattern.length) === pattern) positions.push(i);
+  }
+  <span class="code-keyword">return</span> positions;
+}
+<span class="code-comment">// Result: Found at positions [0, 4]</span>
   </div>
-
   <div class="learning-card impact-card">
     <h2><i class="fas fa-globe"></i> Real-World Impact</h2>
-    <p style="font-size: 1.2em; line-height: 1.8;">
-      During COVID-19, scientists used computer programs like BLAST to study the virus DNA and create vaccines in record time! 
-      Computers analyzed millions of DNA sequences to understand the virus and save lives.
-    </p>
-    <div style="font-size: 3em; margin-top: 15px;">
-      <i class="fas fa-syringe" style="color: #60a5fa;"></i>
-    </div>
+    <p>During COVID-19, scientists used tools like BLAST to study the virus genome and design vaccines in record time. Computers analysed millions of sequences to help save lives worldwide.</p>
+    <div style="font-size:2.5em;margin-top:14px;"><i class="fas fa-syringe" style="color:var(--accent);"></i></div>
   </div>
-
   <div class="learning-card">
     <h2><i class="fas fa-user-graduate"></i> Cool DNA Computer Facts</h2>
     <ul class="icon-list">
-      <li><i class="fas fa-rocket"></i> Computers can compare DNA in seconds (humans would take years!)</li>
-      <li><i class="fas fa-globe"></i> Scientists worldwide share DNA data through the internet</li>
-      <li><i class="fas fa-robot"></i> AI helps predict what genes do</li>
-      <li><i class="fas fa-mobile-screen"></i> Your smartphone has enough power to analyze DNA!</li>
-      <li><i class="fas fa-dna"></i> We share 96% of our DNA with chimpanzees (computers found this!)</li>
+      <li><i class="fas fa-rocket" style="color:var(--a);"></i> Computers compare DNA in seconds — humans would take years!</li>
+      <li><i class="fas fa-globe" style="color:var(--accent);"></i> Scientists worldwide share DNA data through the internet</li>
+      <li><i class="fas fa-robot" style="color:var(--c);"></i> AI helps predict what genes do</li>
+      <li><i class="fas fa-mobile-screen" style="color:var(--t);"></i> Your smartphone has enough power to analyse DNA!</li>
+      <li><i class="fas fa-dna" style="color:var(--g);"></i> We share 96% of our DNA with chimpanzees — computers found this!</li>
     </ul>
   </div>
 </div>
 
-<!-- BLAST Game Section -->
-<div id="blast-section" class="game-container hidden"></div>
-
-<!-- 3D Cube Section -->
-<div id="cube-section" class="game-container hidden">
-  <div id="cube-container"></div>
-  <div style="text-align: center; margin-top: 20px;">
-    <p style="font-size: 1.2em;"><i class="fas fa-hand-pointer" style="margin-right: 8px;"></i> <span id="cube-hint">Click</span> anywhere to rotate the DNA bases!</p>
-    <p>Each color represents a different DNA base:</p>
-    <div class="base-info" style="max-width: 600px; margin: 20px auto;">
-      <div class="base-card base-a">A</div>
-      <div class="base-card base-t">T</div>
-      <div class="base-card base-g">G</div>
-      <div class="base-card base-c">C</div>
+<!-- MUTATION DETECTOR -->
+<div id="mutation-section" class="game-container hidden">
+  <div class="learning-card" style="max-width:100%;margin:0 0 24px;">
+    <h2 style="justify-content:flex-start;gap:12px;"><i class="fas fa-microscope" style="color:var(--a);"></i> Gene Mutation Detector</h2>
+    <p>Enter a <strong>reference (normal) gene</strong> and a <strong>test gene</strong> from your community to find mutations — substitutions, insertions, and deletions.</p>
+    <p style="margin-top:10px;font-size:.9em;color:var(--muted);">Use only the letters <strong style="color:var(--a);">A</strong> <strong style="color:var(--t);">T</strong> <strong style="color:var(--g);">G</strong> <strong style="color:var(--c);">C</strong>. Sequences don't need to be the same length (max 80 bases).</p>
+  </div>
+  <div class="mut-inputs">
+    <div class="mut-input-group">
+      <label>Reference Gene <span class="gene-tag tag-ref">Normal</span></label>
+      <textarea class="gene-input" id="ref-gene" rows="3" placeholder="e.g. ATGCATGCTTAA" spellcheck="false"></textarea>
+      <div class="quick-examples">
+        <span style="font-size:.75em;color:var(--muted);margin-right:4px;">Examples:</span>
+        <button class="example-btn" onclick="loadExample('sickle')">Sickle Cell</button>
+        <button class="example-btn" onclick="loadExample('cftr')">CFTR</button>
+        <button class="example-btn" onclick="loadExample('brca')">BRCA</button>
+      </div>
+    </div>
+    <div class="mut-input-group">
+      <label>Test Gene <span class="gene-tag tag-test">Patient Sample</span></label>
+      <textarea class="gene-input" id="test-gene" rows="3" placeholder="e.g. ATGCATGCTTGA" spellcheck="false"></textarea>
     </div>
   </div>
+  <button class="analyze-btn" onclick="analyzeMutation()"><i class="fas fa-search-plus"></i> Analyse for Mutations</button>
+  <div id="mutation-results" style="display:none;margin-top:24px;"></div>
 </div>
 
-<!-- Quiz Section -->
-<div id="quiz-section" class="game-container hidden">
-  <div class="quiz-container">
-    <div id="quiz-content"></div>
+<!-- IMPACT DETECTIVE -->
+<div id="impact-section" class="game-container hidden">
+  <div id="impact-inner"></div>
+</div>
+
+<!-- FEEDBACK OVERLAY -->
+<div id="fb-overlay" class="fb-overlay">
+  <div class="fb-backdrop"></div>
+  <div class="fb-panel">
+    <div class="fb-cluster">
+      <div class="fb-ring">
+        <span id="fb-main" class="fb-main">✅</span>
+      </div>
+      <span id="fbs1" class="fb-sat p1"></span>
+      <span id="fbs2" class="fb-sat p2"></span>
+      <span id="fbs3" class="fb-sat p3"></span>
+      <span id="fbs4" class="fb-sat p4"></span>
+    </div>
+    <div id="fb-verdict" class="fb-verdict"></div>
+    <div id="fb-explain" class="fb-explain"></div>
+    <div id="fb-reveal" class="fb-reveal"></div>
+    <div id="fb-badges" class="fb-badges"></div>
+    <button class="fb-next" onclick="nextCase()"><i class="fas fa-arrow-right"></i> Next Case</button>
   </div>
 </div>
 
-<!-- Footer -->
 <footer>
-  <p>
-    <i class="fas fa-dna footer-icon-dna"></i>
-    DNA Learning Adventure &mdash; Built for curious minds everywhere.
-  </p>
-  <p>
-    <i class="fas fa-flask footer-icon-flask"></i>
-    Science is for everyone!
-  </p>
+  <p>🧬 DNA Learning Adventure — Built for curious minds everywhere.</p>
+  <p style="margin-top:6px;font-size:.85em;">Science belongs to everyone. Share knowledge freely.</p>
 </footer>
 
-<!-- Achievement Popup -->
 <div id="achievement" class="achievement">
   <i id="achievement-icon" class="fas fa-star"></i>
   <span id="achievement-text"></span>
 </div>
 
 <script>
-let score = 0;
-let level = 'Beginner';
-const BASES = ['A','T','G','C'];
-const COMP = {A:'T',T:'A',G:'C',C:'G'};
+/* ─── GLOBALS ─── */
+let score=0,level='Beginner';
+const sections=['learn','computer','mutation','impact'];
 
-// Quiz Questions
-const quizQuestions = [
+function showSection(s){
+  sections.forEach(id=>{
+    document.getElementById(id+'-section').classList.add('hidden');
+    const b=document.getElementById('btn-'+id);
+    if(b) b.classList.remove('active');
+  });
+  document.getElementById(s+'-section').classList.remove('hidden');
+  const ab=document.getElementById('btn-'+s);
+  if(ab) ab.classList.add('active');
+  if(s==='impact') startImpact();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function speakBase(l,n){
+  showToast(`${l} = ${n}!`,'fa-volume-high');
+  if('speechSynthesis' in window) speechSynthesis.speak(new SpeechSynthesisUtterance(`${l} stands for ${n}`));
+}
+
+function showToast(text,icon='fa-star'){
+  const el=document.getElementById('achievement');
+  document.getElementById('achievement-icon').className='fas '+icon;
+  document.getElementById('achievement-text').textContent=text;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+function updateScore(){
+  if(score>160) level='DNA Expert';
+  else if(score>90) level='DNA Explorer';
+  else if(score>30) level='DNA Student';
+  document.getElementById('score').innerHTML=`<i class="fas fa-star"></i> Score: ${score} | Level: ${level}`;
+}
+
+/* ─── MUTATION DETECTOR ─── */
+const EXAMPLES={
+  sickle:{ref:'ATGGTGCACCTGACTCCTGAGGAGAAGTCT',test:'ATGGTGCACCTGACTCCTGTGGAGAAGTCT'},
+  cftr:{ref:'ATCATCTTTGGTGTTTCCTATGATGAATATAGATACAGAAGCG',test:'ATCATCTTTGGTGTTTCCTATGATGAATATAGATACAGAAGCG'.replace('GATA','G')},
+  brca:{ref:'ATGGATTTATCTGCTCTTCGCGTTGAAGAAGTACAAAA',test:'ATGGATTTATCTGCTCTTCGCGTTGAAGAAGTACAAGA'}
+};
+
+function loadExample(k){
+  document.getElementById('ref-gene').value=EXAMPLES[k].ref;
+  document.getElementById('test-gene').value=EXAMPLES[k].test;
+  showToast('Example loaded!','fa-dna');
+}
+
+function nwAlign(ref,test){
+  const n=ref.length,m=test.length;
+  const dp=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=0;i<=n;i++) dp[i][0]=i*-2;
+  for(let j=0;j<=m;j++) dp[0][j]=j*-2;
+  for(let i=1;i<=n;i++) for(let j=1;j<=m;j++){
+    const s=ref[i-1]===test[j-1]?1:-1;
+    dp[i][j]=Math.max(dp[i-1][j-1]+s,dp[i-1][j]-2,dp[i][j-1]-2);
+  }
+  let aRef='',aTest='',i=n,j=m;
+  while(i>0||j>0){
+    const s=(i>0&&j>0&&ref[i-1]===test[j-1])?1:-1;
+    if(i>0&&j>0&&dp[i][j]===dp[i-1][j-1]+s){aRef=ref[i-1]+aRef;aTest=test[j-1]+aTest;i--;j--;}
+    else if(i>0&&dp[i][j]===dp[i-1][j]-2){aRef=ref[i-1]+aRef;aTest='-'+aTest;i--;}
+    else{aRef='-'+aRef;aTest=test[j-1]+aTest;j--;}
+  }
+  return [aRef,aTest];
+}
+
+function analyzeMutation(){
+  const rr=document.getElementById('ref-gene').value.toUpperCase().replace(/[^ATGC]/g,'');
+  const rt=document.getElementById('test-gene').value.toUpperCase().replace(/[^ATGC]/g,'');
+  if(!rr||!rt){showToast('Enter both sequences!','fa-triangle-exclamation');return;}
+  if(rr.length>80||rt.length>80){showToast('Max 80 bases each','fa-triangle-exclamation');return;}
+  const [aRef,aTest]=nwAlign(rr,rt);
+  const mutations=[];let matches=0;
+  for(let i=0;i<aRef.length;i++){
+    const r=aRef[i],t=aTest[i];
+    if(r===t){matches++;continue;}
+    if(r==='-') mutations.push({pos:i+1,type:'insertion',ref:'-',test:t});
+    else if(t==='-') mutations.push({pos:i+1,type:'deletion',ref:r,test:'-'});
+    else mutations.push({pos:i+1,type:'substitution',ref:r,test:t});
+  }
+  const identity=(matches/aRef.length*100).toFixed(1);
+  renderMutResults(aRef,aTest,mutations,identity,matches);
+  score+=20;updateScore();showToast('Analysis Complete! +20','fa-microscope');
+}
+
+function renderMutResults(aRef,aTest,mutations,identity,matches){
+  const res=document.getElementById('mutation-results');res.style.display='block';
+  const subs=mutations.filter(m=>m.type==='substitution').length;
+  const ins=mutations.filter(m=>m.type==='insertion').length;
+  const del=mutations.filter(m=>m.type==='deletion').length;
+  const pct=parseFloat(identity);
+  const barColor=pct>=95?'#10b981':pct>=80?'#fbbf24':'#ef4444';
+  let refRow='',testRow='',matchRow='';
+  for(let i=0;i<aRef.length;i++){
+    const r=aRef[i],t=aTest[i],isMut=r!==t;
+    const rC=r==='-'?'bc-gap':`bc-${r}${isMut?' bc-mutated':''}`;
+    const tC=t==='-'?'bc-gap':`bc-${t}${isMut?' bc-mutated':''}`;
+    refRow+=`<span class="base-char ${rC}" title="pos ${i+1}">${r}</span>`;
+    testRow+=`<span class="base-char ${tC}" title="pos ${i+1}">${t}</span>`;
+    matchRow+=`<span style="display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;font-size:14px;">${r===t?'<span style="color:#10b981;">|</span>':'<span style="color:#ef4444;">✗</span>'}</span>`;
+  }
+  let mutTable='';
+  if(mutations.length===0){
+    mutTable=`<div class="no-mutations"><i class="fas fa-circle-check"></i> No mutations detected — sequences are identical!</div>`;
+  } else {
+    const bC={substitution:'badge-sub',insertion:'badge-ins',deletion:'badge-del'};
+    const bI={substitution:'fa-arrow-right-arrow-left',insertion:'fa-plus',deletion:'fa-minus'};
+    const rows=mutations.map(m=>`<div class="mut-list-row"><span style="font-family:var(--mono);color:var(--muted);">${m.pos}</span><span><span class="mut-type-badge ${bC[m.type]}"><i class="fas ${bI[m.type]}"></i> ${m.type}</span></span><span style="font-family:var(--mono);color:var(--a);">${m.ref}</span><span style="font-family:var(--mono);color:var(--g);">${m.test}</span><span style="color:var(--muted);font-size:.85em;">${m.type==='substitution'?'Point mutation':m.type==='insertion'?'Base inserted':'Base deleted'}</span></div>`).join('');
+    mutTable=`<div class="mut-list"><div class="mut-list-header"><span>Pos</span><span>Type</span><span>Ref</span><span>Test</span><span>Note</span></div>${rows}</div>`;
+  }
+  res.innerHTML=`<div class="mut-stats"><div class="mut-stat-card"><div class="stat-num stat-total">${aRef.length}</div><div class="stat-label">Aligned Length</div></div><div class="mut-stat-card"><div class="stat-num stat-match">${matches}</div><div class="stat-label">Matches</div></div><div class="mut-stat-card"><div class="stat-num stat-sub">${subs}</div><div class="stat-label">Substitutions</div></div><div class="mut-stat-card"><div class="stat-num stat-ins">${ins}</div><div class="stat-label">Insertions</div></div><div class="mut-stat-card"><div class="stat-num stat-del">${del}</div><div class="stat-label">Deletions</div></div></div><div class="identity-bar-wrap"><div class="identity-bar-label"><span>Sequence Identity</span><span>${identity}%</span></div><div class="identity-bar-track"><div class="identity-bar-fill" style="width:${identity}%;background:${barColor};"></div></div></div><div class="alignment-viewer"><div class="alignment-title">Pairwise Alignment (Needleman-Wunsch) — <span style="color:var(--a);">red = mutation</span></div><div class="aln-row"><span class="aln-label">Reference</span><div class="aln-seq">${refRow}</div></div><div class="aln-row"><span class="aln-label" style="font-size:.7em;">Match</span><div style="display:flex;flex-wrap:wrap;gap:2px;">${matchRow}</div></div><div class="aln-row"><span class="aln-label" style="color:var(--danger);">Test</span><div class="aln-seq">${testRow}</div></div></div>${mutTable}`;
+}
+
+/* ─────────────────────────────────────────
+   IMPACT DETECTIVE
+───────────────────────────────────────── */
+const CASES=[
   {
-    question: "What are the 4 bases in DNA?",
-    options: ["A, B, C, D", "A, T, G, C", "1, 2, 3, 4", "W, X, Y, Z"],
-    correct: 1,
-    explanation: "DNA is made of 4 bases: Adenine (A), Thymine (T), Guanine (G), and Cytosine (C)!"
+    cat:'emb', avatar:'👶', avatarBg:'rgba(56,189,248,.14)',
+    name:'Baby Kofi · 3 weeks old',
+    story:'Born with a hole between the two chambers of his heart. In week 4 of pregnancy the cells forming the heart wall divided incorrectly — leaving a permanent gap. Neither parent has heart disease.',
+    ref: 'ATGCCTGAAGCTTTGCCA',
+    test:'ATGCCTGAAGCTT-GCCA',
+    mutIdx:[13],
+    clues:[{e:'🫀',t:'Heart defect present at birth'},{e:'📅',t:'Error in embryo week 4'},{e:'🔬',t:'Deletion in cardiac division gene'}],
+    explain:'A <strong>deletion</strong> in the cardiac cell-division gene arose during embryo development — well before birth. This is an <strong>Embryological mutation</strong>: no environmental toxin, no inherited variant, just a copying error in early cell division.',
+    badges:[{e:'🫀',l:'Heart defect'},{e:'🧫',l:'Cell division'},{e:'🔬',l:'Prenatal'},{e:'📅',l:'Week 4'},{e:'💙',l:'Not inherited'}]
   },
   {
-    question: "Which base pairs with A (Adenine)?",
-    options: ["G", "C", "T", "A"],
-    correct: 2,
-    explanation: "A pairs with T! Think of them as best friends who always stick together."
+    cat:'env', avatar:'⛏️', avatarBg:'rgba(45,212,191,.14)',
+    name:'Mr. Mensah · 54 years old',
+    story:'A goldmine worker for 28 years — daily silica dust and trace arsenic in the shafts. Diagnosed with lung cancer at 52. His parents, siblings, and children have never had cancer.',
+    ref: 'ATGGAGCGCTTCGTCAAG',
+    test:'ATGGAGCGCTTCATCAAG',
+    mutIdx:[12],
+    clues:[{e:'🏭',t:'28 years silica & arsenic exposure'},{e:'👨‍👩‍👧',t:'Zero family history of cancer'},{e:'🧬',t:'Substitution in TP53 gene'}],
+    explain:'Long-term inhalation of silica dust and arsenic caused a <strong>point substitution</strong> in the TP53 tumour-suppressor gene. This is an <strong>Environmental mutation</strong> — acquired through occupational exposure, not inherited from parents.',
+    badges:[{e:'☠️',l:'Toxic dust'},{e:'🏭',l:'Occupational'},{e:'🫁',l:'Lung cancer'},{e:'🧪',l:'Mutagen'},{e:'🚫',l:'Not inherited'}]
   },
   {
-    question: "Which base pairs with G (Guanine)?",
-    options: ["A", "T", "C", "G"],
-    correct: 2,
-    explanation: "G pairs with C! They're another perfect pair in DNA."
+    cat:'gen', avatar:'👧', avatarBg:'rgba(167,139,250,.14)',
+    name:'Ama · 9 years old',
+    story:'Diagnosed with sickle cell disease. Her mother and father both carry the HbS variant silently. Ama received one mutated copy from each parent — her red blood cells crumple into a crescent shape.',
+    ref: 'ATGGTGCACCTGACTCCTGAGGAG',
+    test:'ATGGTGCACCTGACTCCTGTGGAG',
+    mutIdx:[19],
+    clues:[{e:'🩸',t:'Both parents are HbS carriers'},{e:'🧬',t:'A→T substitution in HBB gene'},{e:'👨‍👩‍👧',t:'Autosomal recessive pattern'}],
+    explain:'The single <strong>A→T substitution</strong> in the HBB beta-globin gene is a classic <strong>Genetic (inherited) mutation</strong>. Both parents carried one silent copy. Ama received both — causing full sickle cell disease.',
+    badges:[{e:'🧬',l:'HBB gene'},{e:'👨‍👩‍👧',l:'Both carriers'},{e:'🔴',l:'Sickle cells'},{e:'🩸',l:'Haemoglobin'},{e:'♻️',l:'Hereditary'}]
   },
   {
-    question: "What does BLAST help scientists do?",
-    options: ["Play games", "Search for DNA patterns", "Make explosions", "Cook food"],
-    correct: 1,
-    explanation: "BLAST is a computer tool that helps scientists search through millions of DNA sequences!"
+    cat:'emb', avatar:'🤰', avatarBg:'rgba(56,189,248,.14)',
+    name:'Baby Akosua · in utero',
+    story:'Prenatal screening at 16 weeks detected an extra copy of chromosome 21 — Trisomy 21. During formation of the egg cell, chromosomes failed to separate properly (non-disjunction). No family history of chromosomal disorders.',
+    ref: 'CGATTAGCCTAACGTTAG',
+    test:'CGATTAGCCTAACGTTAG',
+    mutIdx:[],
+    clues:[{e:'🔢',t:'Trisomy 21 — 3 copies of Chr. 21'},{e:'🥚',t:'Non-disjunction during meiosis'},{e:'🩺',t:'Found at prenatal screening'}],
+    explain:'Non-disjunction during egg formation gave the egg an extra chromosome 21. This is an <strong>Embryological mutation</strong> — it happens at the very first cell division, before any environmental exposure, and is not passed from parent to child in the typical sense.',
+    badges:[{e:'🥚',l:'Egg cell error'},{e:'🔬',l:'Non-disjunction'},{e:'🧫',l:'Meiosis'},{e:'📋',l:'Trisomy 21'},{e:'💙',l:'Prenatal'}]
   },
   {
-    question: "How many DNA letters does a human have?",
-    options: ["1,000", "1 million", "3 billion", "Infinite"],
-    correct: 2,
-    explanation: "Humans have about 3 BILLION DNA letters! That's why we need computers to study them."
+    cat:'env', avatar:'👩', avatarBg:'rgba(45,212,191,.14)',
+    name:'Maame Adwoa · 41 years old',
+    story:'Grew up near an industrial benzene spill site. Drinking-water tests showed contamination for over 15 years. Developed acute myeloid leukaemia at 39. No relatives have any blood cancers.',
+    ref: 'ATGACGCTTGAGTTCGCC',
+    test:'ATGACGCTTGAGTTCGCC'.replace('TTC','TCC'),
+    mutIdx:[14],
+    clues:[{e:'💧',t:'Benzene-contaminated groundwater'},{e:'🦴',t:'Leukaemia — bone marrow affected'},{e:'🚫',t:'No family history at all'}],
+    explain:'Benzene is a potent bone-marrow mutagen. Chronic contaminated-water exposure created somatic <strong>substitutions</strong> in bone-marrow stem cells, triggering leukaemia. This is a clear <strong>Environmental mutation</strong> — not inherited.',
+    badges:[{e:'🧪',l:'Benzene'},{e:'💧',l:'Contaminated water'},{e:'🦴',l:'Bone marrow'},{e:'☣️',l:'Mutagen'},{e:'🏥',l:'Leukaemia'}]
   },
   {
-    question: "Why do scientists use computers for DNA?",
-    options: ["It's too much data for humans alone", "Computers are fun", "They don't", "Only for games"],
-    correct: 0,
-    explanation: "DNA has billions of letters! Computers can analyze this huge amount of data in seconds."
+    cat:'gen', avatar:'👩‍🦱', avatarBg:'rgba(167,139,250,.14)',
+    name:'Dr. Abena · 36 years old',
+    story:'Her grandmother, mother and two aunts all developed breast cancer before age 45. Testing confirmed a pathogenic BRCA1 variant. Dr. Abena has never smoked, keeps an active lifestyle, and has no environmental risk factors.',
+    ref: 'ATGGATTTATCTGCTCTTCGCGTTGAAG',
+    test:'ATGGATTTATCTGCTCTTCGCGTTGAAC',
+    mutIdx:[27],
+    clues:[{e:'👵',t:'Three generations affected'},{e:'🧬',t:'BRCA1 pathogenic variant'},{e:'💚',t:'Healthy lifestyle — not environmental'}],
+    explain:'The BRCA1 variant has been in this family\'s germline for at least three generations. This is a <strong>Genetic (inherited) mutation</strong> — present in every cell from birth, dramatically raising breast and ovarian cancer risk regardless of environment.',
+    badges:[{e:'🧬',l:'BRCA1'},{e:'👵',l:'3 generations'},{e:'🔬',l:'Germline'},{e:'💜',l:'Inherited risk'},{e:'🏥',l:'Cancer gene'}]
+  },
+  {
+    cat:'emb', avatar:'👶', avatarBg:'rgba(56,189,248,.14)',
+    name:'Baby Kwame · newborn',
+    story:'Born with spina bifida — his spinal cord did not close during week 3–4 of embryo formation. Sequencing showed a spontaneous de-novo insertion in the neural-tube closure gene. His parents do not carry this variant.',
+    ref: 'GCATCGATCGAATCGATC',
+    test:'GCATCGATCGTAATCGATC',
+    mutIdx:[10],
+    clues:[{e:'🧠',t:'Spinal cord open — neural tube defect'},{e:'➕',t:'De novo insertion not in parents'},{e:'🏥',t:'Detected immediately after birth'}],
+    explain:'A <strong>de novo insertion</strong> appeared spontaneously during DNA replication in the very early embryo — neither parent carries it. This is an <strong>Embryological mutation</strong>: a brand-new replication error, not inherited, not environmental.',
+    badges:[{e:'🧠',l:'Neural tube'},{e:'🧫',l:'De novo'},{e:'➕',l:'Insertion'},{e:'🔬',l:'Replication error'},{e:'💙',l:'Not in parents'}]
+  },
+  {
+    cat:'gen', avatar:'👦', avatarBg:'rgba(167,139,250,.14)',
+    name:'Kweku · 7 years old',
+    story:'Diagnosed with cystic fibrosis. The ΔF508 deletion removes three bases from the CFTR gene — the protein misfolds and cannot clear mucus from the lungs. Both parents are healthy silent carriers of the same deletion.',
+    ref: 'ATCATCTTTGGTGTTTCC',
+    test:'ATCATC---GGTGTTTCC',
+    mutIdx:[6,7,8],
+    clues:[{e:'👨‍👩‍👧',t:'Both parents are silent carriers'},{e:'🫁',t:'Thick mucus in lungs & gut'},{e:'🧬',t:'ΔF508 three-base deletion in CFTR'}],
+    explain:'The ΔF508 three-base deletion removes the phenylalanine-508 codon from the CFTR chloride channel. Both parents silently carried one faulty copy and passed both to Kweku. This is a <strong>Genetic (inherited) mutation</strong> — present in the family germline for generations.',
+    badges:[{e:'🧬',l:'CFTR gene'},{e:'➖',l:'ΔF508'},{e:'👨‍👩‍👧',l:'Both carriers'},{e:'🫁',l:'Cystic fibrosis'},{e:'♻️',l:'Hereditary'}]
   }
 ];
 
-let currentQuiz = 0;
+let impact={idx:0,correct:0,wrong:0,streak:0,maxStreak:0,answers:[]};
 
-// Section Navigation
-function showSection(section) {
-  document.getElementById('learn-section').classList.add('hidden');
-  document.getElementById('computer-section').classList.add('hidden');
-  document.getElementById('blast-section').classList.add('hidden');
-  document.getElementById('cube-section').classList.add('hidden');
-  document.getElementById('quiz-section').classList.add('hidden');
-  
-  destroy3D();
-  
-  if(section === 'learn') {
-    document.getElementById('learn-section').classList.remove('hidden');
-  } else if(section === 'computer') {
-    document.getElementById('computer-section').classList.remove('hidden');
-  } else if(section === 'blast') {
-    document.getElementById('blast-section').classList.remove('hidden');
-    startBlast();
-  } else if(section === 'cube') {
-    document.getElementById('cube-section').classList.remove('hidden');
-    startCube();
-  } else if(section === 'quiz') {
-    document.getElementById('quiz-section').classList.remove('hidden');
-    startQuiz();
+function startImpact(){
+  impact={idx:0,correct:0,wrong:0,streak:0,maxStreak:0,answers:new Array(CASES.length).fill(null)};
+  renderCase(0);
+}
+
+function renderCase(idx){
+  if(idx>=CASES.length){renderImpactComplete();return;}
+  const c=CASES[idx];
+  const inner=document.getElementById('impact-inner');
+
+  const dots=CASES.map((_,i)=>{
+    let cls='imp-dot';
+    if(impact.answers[i]==='correct') cls+=' done-correct';
+    else if(impact.answers[i]==='wrong') cls+=' done-wrong';
+    else if(i===idx) cls+=' current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  const pills=`<div class="impact-score-banner">
+    <div class="isb-pill"><i class="fas fa-check" style="color:var(--success);"></i> ${impact.correct} Correct</div>
+    <div class="isb-pill"><i class="fas fa-xmark" style="color:var(--danger);"></i> ${impact.wrong} Wrong</div>
+    <div class="isb-pill"><i class="fas fa-fire" style="color:var(--t);"></i> ${impact.streak} Streak</div>
+    <div class="isb-pill"><i class="fas fa-list" style="color:var(--accent);"></i> ${idx+1}/${CASES.length}</div>
+  </div>`;
+
+  let refHtml='',testHtml='';
+  for(let i=0;i<c.ref.length;i++){
+    const b=c.ref[i],isMut=c.mutIdx.includes(i);
+    refHtml+=`<span class="csb-b b${b}${isMut?' bMut':''}">${b}</span>`;
   }
-}
-
-// Speak base name
-function speakBase(letter, name) {
-  showAchievement(`${letter} is for ${name}!`, 'fa-volume-high');
-  if('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(`${letter} stands for ${name}`);
-    speechSynthesis.speak(utterance);
-  }
-}
-
-// Achievement popup
-function showAchievement(text, icon = 'fa-star') {
-  const ach = document.getElementById('achievement');
-  const achIcon = document.getElementById('achievement-icon');
-  const achText = document.getElementById('achievement-text');
-  
-  achIcon.className = 'fas ' + icon;
-  achText.textContent = text;
-  ach.classList.add('show');
-  
-  setTimeout(() => {
-    ach.classList.remove('show');
-  }, 2000);
-}
-
-/* ===== QUIZ SYSTEM ===== */
-function startQuiz() {
-  currentQuiz = 0;
-  renderQuiz();
-}
-
-function renderQuiz() {
-  if(currentQuiz >= quizQuestions.length) {
-    document.getElementById('quiz-content').innerHTML = `
-      <h2 style="color: #fbbf24; display: flex; align-items: center; justify-content: center; gap: 10px;">
-        <i class="fas fa-award"></i> Quiz Complete!
-      </h2>
-      <p style="font-size: 1.5em;">You've learned so much about DNA and computers!</p>
-      <p style="font-size: 1.2em;"><i class="fas fa-star" style="color: #fbbf24;"></i> Final Score: ${score}</p>
-      <button onclick="startQuiz()"><i class="fas fa-redo"></i> Take Quiz Again</button>
-    `;
-    if(score > 100) {
-      level = 'DNA Expert';
-      showAchievement('You are a DNA Expert!', 'fa-trophy');
-    } else if(score > 50) {
-      level = 'DNA Explorer';
-    }
-    updateScore();
-    return;
+  for(let i=0;i<c.test.length;i++){
+    const b=c.test[i];
+    if(b==='-'){testHtml+=`<span class="csb-b bc-gap2">—</span>`;}
+    else{const isMut=c.mutIdx.includes(i);testHtml+=`<span class="csb-b b${b}${isMut?' bMut':''}">${b}</span>`;}
   }
 
-  const q = quizQuestions[currentQuiz];
-  let html = `
-    <div class="quiz-question">
-      <i class="fas fa-question-circle" style="color: #60a5fa; margin-right: 10px;"></i>
-      Question ${currentQuiz + 1}: ${q.question}
+  const clueHtml=c.clues.map(cl=>`<div class="clue-tag"><span>${cl.e}</span> ${cl.t}</div>`).join('');
+
+  const choiceHtml=`
+    <button class="choice-btn emb-btn" onclick="chooseImpact('emb')">
+      <div class="choice-icon-wrap">🧫</div>
+      <div>Embryological<div class="choice-sub">Error in early development</div></div>
+    </button>
+    <button class="choice-btn env-btn" onclick="chooseImpact('env')">
+      <div class="choice-icon-wrap">☣️</div>
+      <div>Environmental<div class="choice-sub">Caused by external exposure</div></div>
+    </button>
+    <button class="choice-btn gen-btn" onclick="chooseImpact('gen')">
+      <div class="choice-icon-wrap">🧬</div>
+      <div>Genetic<div class="choice-sub">Inherited from parents</div></div>
+    </button>`;
+
+  inner.innerHTML=`
+    <div class="impact-header">
+      <h2><i class="fas fa-magnifying-glass-chart"></i> Impact Detective</h2>
+      <p>Analyse the DNA sequences and patient history — classify the mutation origin.</p>
     </div>
-    <div class="quiz-options">
-  `;
-  
-  q.options.forEach((opt, i) => {
-    html += `<div class="quiz-option" onclick="checkAnswer(${i})">${opt}</div>`;
-  });
-  
-  html += `</div><div id="feedback" class="feedback" style="display:none;"></div>`;
-  document.getElementById('quiz-content').innerHTML = html;
-}
-
-function checkAnswer(selected) {
-  const q = quizQuestions[currentQuiz];
-  const options = document.querySelectorAll('.quiz-option');
-  const feedback = document.getElementById('feedback');
-  
-  options.forEach(opt => opt.style.pointerEvents = 'none');
-  
-  if(selected === q.correct) {
-    options[selected].classList.add('correct');
-    feedback.innerHTML = `<i class="fas fa-check-circle"></i> Correct! ${q.explanation}`;
-    feedback.style.background = 'rgba(16, 185, 129, 0.3)';
-    feedback.style.display = 'flex';
-    score += 10;
-    updateScore();
-    showAchievement('+10 Points!', 'fa-check');
-  } else {
-    options[selected].classList.add('incorrect');
-    options[q.correct].classList.add('correct');
-    feedback.innerHTML = `<i class="fas fa-times-circle"></i> Not quite! ${q.explanation}`;
-    feedback.style.background = 'rgba(239, 68, 68, 0.3)';
-    feedback.style.display = 'flex';
-  }
-  
-  setTimeout(() => {
-    currentQuiz++;
-    renderQuiz();
-  }, 3000);
-}
-
-/* ===== 2D BLAST MODE ===== */
-let blast = {};
-
-function randomDNA(n){
-  let s = '';
-  for(let i=0;i<n;i++){
-    s += BASES[Math.floor(Math.random()*4)];
-  }
-  return s;
-}
-
-function startBlast(){
-  const container = document.getElementById('blast-section');
-  container.innerHTML = '';
-
-  let genome = randomDNA(40);
-  let pattern = randomDNA(4);
-  let pos = Math.floor(Math.random() * (genome.length - pattern.length));
-
-  genome = genome.slice(0,pos) + pattern + genome.slice(pos + pattern.length);
-
-  blast = {genome, pattern, pos};
-
-  renderBlast();
-}
-
-function renderBlast(){
-  const container = document.getElementById('blast-section');
-
-  const decoys = new Set();
-  while(decoys.size < 3) {
-    const p = Math.floor(Math.random() * 36);
-    if(p !== blast.pos) decoys.add(p);
-  }
-  const positions = [blast.pos, ...decoys].sort(() => Math.random() - 0.5);
-  
-  container.innerHTML = `
-    <div class="learning-card">
-      <h2><i class="fas fa-magnifying-glass"></i> BLAST Search Game</h2>
-      <p>You're a scientist using BLAST to find a DNA pattern!</p>
-      <div class="sequence">${blast.genome}</div>
-      <h3 style="color: #fbbf24;">
-        <i class="fas fa-crosshairs" style="margin-right: 8px;"></i>
-        Find this pattern: <span style="letter-spacing: 8px;">${blast.pattern}</span>
-      </h3>
-      <p>Click the correct position where the pattern starts:</p>
+    ${pills}
+    <div class="impact-progress">${dots}</div>
+    <div class="case-card ${c.cat}">
+      <div class="case-number">CASE ${idx+1} OF ${CASES.length}</div>
+      <div class="case-patient">
+        <div class="patient-avatar" style="background:${c.avatarBg};">${c.avatar}</div>
+        <div class="patient-info"><h3>${c.name}</h3><p>${c.story}</p></div>
+      </div>
+      <div class="case-seq-block">
+        <div class="csb-label">DNA Sequence Analysis</div>
+        <div class="csb-seqs">
+          <div class="csb-row"><span class="csb-tag csb-ref">REF</span><div class="csb-bases">${refHtml}</div></div>
+          <div class="csb-row"><span class="csb-tag csb-test">TEST</span><div class="csb-bases">${testHtml}</div></div>
+        </div>
+      </div>
+      <div class="case-clues">${clueHtml}</div>
     </div>
-  `;
-
-  const btnContainer = document.createElement('div');
-  btnContainer.className = 'blast-btn-container';
-
-  positions.forEach(p => {
-    const btn = document.createElement('button');
-    btn.className = 'blast-btn';
-    btn.innerHTML = `<i class="fas fa-location-dot"></i> Position ${p}`;
-    btn.onclick = () => checkBlast(p);
-    btnContainer.appendChild(btn);
-  });
-  
-  container.appendChild(btnContainer);
+    <div class="choice-label">CLASSIFY THIS MUTATION</div>
+    <div class="choice-grid">${choiceHtml}</div>`;
 }
 
-function checkBlast(g){
-  if(g === blast.pos){
-    score += 15;
-    showAchievement('Perfect Match! +15 points', 'fa-bullseye');
-    setTimeout(startBlast, 1500);
+function chooseImpact(chosen){
+  const c=CASES[impact.idx];
+  const isCorrect=chosen===c.cat;
+  if(isCorrect){
+    impact.correct++;impact.streak++;
+    impact.maxStreak=Math.max(impact.maxStreak,impact.streak);
+    impact.answers[impact.idx]='correct';
+    score+=25;
   } else {
-    showAchievement(`Try again! Correct position: ${blast.pos}`, 'fa-xmark');
-    setTimeout(startBlast, 2000);
+    impact.wrong++;impact.streak=0;
+    impact.answers[impact.idx]='wrong';
   }
   updateScore();
+  showFeedback(isCorrect,c);
 }
 
-/* ===== 3D DNA CUBE MODE ===== */
-let scene, camera, renderer, cubes = [];
-let animationId, resizeHandler = null;
+function showFeedback(isCorrect,c){
+  const overlay=document.getElementById('fb-overlay');
+  overlay.className='fb-overlay '+(isCorrect?'correct':'wrong');
+  document.getElementById('fb-main').textContent=isCorrect?'✅':'❌';
 
-function startCube(){
-  destroy3D();
-  init3D();
-  createCube();
-  animate();
-}
+  const sats=isCorrect?['🎉','🧬','⭐','🔬']:['💡','🔍','📚','🧪'];
+  ['fbs1','fbs2','fbs3','fbs4'].forEach((id,i)=>{document.getElementById(id).textContent=sats[i];});
 
-function init3D(){
-  const container = document.getElementById('cube-container');
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x1a1a2e);
-  
-  camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+  document.getElementById('fb-verdict').textContent=isCorrect?'Correct Diagnosis!':'Not Quite!';
+  document.getElementById('fb-explain').innerHTML=c.explain;
 
-  renderer = new THREE.WebGLRenderer({antialias:true});
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  container.appendChild(renderer.domElement);
-
-  // Add lighting
-  const light = new THREE.PointLight(0xffffff, 1, 100);
-  light.position.set(0, 0, 10);
-  scene.add(light);
-
-  const ambientLight = new THREE.AmbientLight(0x404040);
-  scene.add(ambientLight);
-
-  camera.position.z = window.innerWidth < 768 ? 11 : 8;
-
-  resizeHandler = () => {
-    camera.aspect = container.clientWidth / container.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-  };
-  window.addEventListener('resize', resizeHandler);
-}
-
-function createCube(){
-  const isMobile = window.innerWidth < 768;
-  const cubeCount = isMobile ? 4 : 6;
-  let dna = randomDNA(cubeCount);
-  cubes = [];
-  dna.split('').forEach((base, i) => {
-    let color = {A:0xfb7185,T:0xfbbf24,G:0x2dd4bf,C:0xa78bfa}[base];
-    let geometry = new THREE.BoxGeometry(1,1,1);
-    let material = new THREE.MeshPhongMaterial({
-      color: color,
-      shininess: 100,
-      specular: 0x444444
-    });
-    let cube = new THREE.Mesh(geometry, material);
-
-    const offset = (cubeCount / 2) - 0.5;
-    cube.position.x = (i - offset) * 1.5;
-    cube.userData = {base: base, correct: COMP[base]};
-
-    // Add edge
-    const edges = new THREE.EdgesGeometry(geometry);
-    const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color: 0xffffff}));
-    cube.add(line);
-
-    scene.add(cube);
-    cubes.push(cube);
-  });
-}
-
-function rotateCube(){
-  cubes.forEach(c => {
-    c.rotation.x += Math.PI / 2;
-    c.rotation.y += Math.PI / 2;
-  });
-  score += 2;
-  updateScore();
-}
-
-function animate(){
-  animationId = requestAnimationFrame(animate);
-  
-  // Auto-rotate slightly
-  cubes.forEach(c => {
-    c.rotation.y += 0.005;
-  });
-  
-  renderer.render(scene, camera);
-}
-
-function destroy3D(){
-  const container = document.getElementById('cube-container');
-  if(renderer){
-    cancelAnimationFrame(animationId);
-    container.innerHTML = '';
-    renderer.dispose();
-    renderer = null;
+  const reveal=document.getElementById('fb-reveal');
+  if(!isCorrect){
+    const names={emb:'Embryological',env:'Environmental',gen:'Genetic'};
+    reveal.innerHTML=`<strong>Correct classification:</strong> ${names[c.cat]} mutation`;
+    reveal.classList.add('on');
+  } else {
+    reveal.classList.remove('on');
   }
-  if(resizeHandler){
-    window.removeEventListener('resize', resizeHandler);
-    resizeHandler = null;
-  }
+
+  const badgeHtml=c.badges.map((b,i)=>`<div class="fb-badge"><div class="fb-badge-icon" style="animation-delay:${0.1+i*0.08}s">${b.e}</div><div class="fb-badge-lbl">${b.l}</div></div>`).join('');
+  document.getElementById('fb-badges').innerHTML=badgeHtml;
+
+  overlay.classList.add('show');
+  if(isCorrect) showToast('+25 Points!','fa-check-circle');
 }
 
-// Click handler for cube rotation
-document.addEventListener('click', (e) => {
-  if(!document.getElementById('cube-section').classList.contains('hidden')) {
-    rotateCube();
-  }
-});
-
-function updateScore(){
-  if(score > 100) level = 'DNA Expert';
-  else if(score > 50) level = 'DNA Explorer';
-  else if(score > 20) level = 'DNA Student';
-  
-  document.getElementById('score').innerHTML = `<i class="fas fa-star"></i> Score: ${score} | Level: ${level}`;
+function nextCase(){
+  document.getElementById('fb-overlay').classList.remove('show');
+  impact.idx++;
+  setTimeout(()=>renderCase(impact.idx),350);
 }
 
-// Initialize - show learning section by default
-window.onload = () => {
-  if('ontouchstart' in window) {
-    const hint = document.getElementById('cube-hint');
-    if(hint) hint.textContent = 'Tap';
-  }
-  showSection('learn');
-};
+function renderImpactComplete(){
+  const inner=document.getElementById('impact-inner');
+  const pct=Math.round((impact.correct/CASES.length)*100);
+  const stars=pct>=80?'⭐⭐⭐':pct>=50?'⭐⭐':'⭐';
+  const msg=pct>=80
+    ?'Outstanding detective work! You understand the difference between embryological, environmental, and genetic mutations.'
+    :pct>=50
+    ?'Good effort! Review the case explanations to sharpen your mutation classification skills.'
+    :'Keep studying! Each case has key clues — family history, exposure, and timing are your best tools.';
+
+  inner.innerHTML=`<div class="complete-wrap">
+    <span class="complete-trophy">🏆</span>
+    <h2>Investigation Complete!</h2>
+    <div class="complete-stars">${stars}</div>
+    <div class="complete-stat-row">
+      <div class="csr-item"><div class="csr-num" style="color:var(--success);">${impact.correct}</div><div class="csr-lbl">Correct</div></div>
+      <div class="csr-item"><div class="csr-num" style="color:var(--danger);">${impact.wrong}</div><div class="csr-lbl">Wrong</div></div>
+      <div class="csr-item"><div class="csr-num" style="color:var(--t);">${impact.maxStreak}</div><div class="csr-lbl">Best Streak</div></div>
+      <div class="csr-item"><div class="csr-num" style="color:var(--accent);">${pct}%</div><div class="csr-lbl">Accuracy</div></div>
+    </div>
+    <p style="color:var(--muted);margin:16px 0;font-size:.95em;line-height:1.6;">${msg}</p>
+    <button class="restart-btn" onclick="startImpact()"><i class="fas fa-rotate-left"></i> Investigate Again</button>
+  </div>`;
+
+  if(pct>=80) showToast('Master Detective! 🔬','fa-award');
+  else if(pct>=50) showToast('Good Investigation!','fa-magnifying-glass');
+}
+
+window.onload=()=>showSection('learn');
 </script>
 
 </body>
 </html>
-
