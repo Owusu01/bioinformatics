@@ -211,6 +211,19 @@ button i{font-size:15px}
 footer{position:relative;z-index:5;text-align:center;padding:28px 20px;margin-top:20px;background:rgba(13,15,26,.9);border-top:1px solid var(--border);color:var(--muted);font-size:.9em;line-height:1.8}
 @media(max-width:768px){.game-container{margin:12px;padding:16px}.comparison-grid{grid-template-columns:1fr}.mut-list-header,.mut-list-row{grid-template-columns:50px 85px 1fr}.mut-list-header span:nth-child(4),.mut-list-header span:nth-child(5),.mut-list-row span:nth-child(4),.mut-list-row span:nth-child(5){display:none}.fb-cluster{width:96px;height:96px}.fb-main{font-size:3em}}
 @media(max-width:480px){.nav-buttons button{font-size:13px;padding:9px 14px}.achievement{padding:20px 24px;font-size:1.1em;width:88vw}.choice-btn{min-height:88px;padding:14px 10px}}
+
+/* ── AI PANEL ── */
+.ai-section{margin-top:24px}
+.ai-ask-btn{width:100%;padding:14px;font-size:1em;border-radius:12px;justify-content:center;background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(251,113,133,.15));border-color:rgba(251,191,36,.5);color:var(--t);margin-bottom:0}
+.ai-ask-btn:hover{background:linear-gradient(135deg,rgba(251,191,36,.28),rgba(251,113,133,.28));border-color:var(--t);color:var(--t);box-shadow:0 8px 24px rgba(251,191,36,.2)}
+.ai-ask-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.ai-panel{display:none;margin-top:14px;background:rgba(0,0,0,.45);border:1px solid rgba(251,191,36,.25);border-radius:14px;overflow:hidden}
+.ai-panel-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(251,113,133,.08));border-bottom:1px solid rgba(251,191,36,.18)}
+.ai-panel-header span{font-weight:700;font-size:.9em;color:var(--t);display:flex;align-items:center;gap:8px}
+.ai-model-tag{font-size:.72em;padding:2px 9px;border-radius:20px;background:rgba(56,189,248,.15);color:var(--accent);border:1px solid rgba(56,189,248,.3);font-family:var(--mono);font-weight:400;letter-spacing:.5px}
+.ai-response{padding:18px 20px;font-size:.92em;line-height:1.75;color:var(--text);white-space:pre-wrap;min-height:60px}
+.ai-response:empty::after{content:'Generating…';color:var(--muted);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
 </style>
 </head>
 <body>
@@ -378,6 +391,7 @@ footer{position:relative;z-index:5;text-align:center;padding:28px 20px;margin-to
 /* ─── GLOBALS ─── */
 let score=0,level='Beginner';
 const sections=['learn','computer','mutation','impact'];
+let lastAnalysis=null;
 
 function showSection(s){
   sections.forEach(id=>{
@@ -459,6 +473,7 @@ function analyzeMutation(){
     else mutations.push({pos:i+1,type:'substitution',ref:r,test:t});
   }
   const identity=(matches/aRef.length*100).toFixed(1);
+  lastAnalysis={ref:rr,test:rt,mutations,identity};
   renderMutResults(aRef,aTest,mutations,identity,matches);
   score+=20;updateScore();showToast('Analysis Complete! +20','fa-microscope');
 }
@@ -488,7 +503,99 @@ function renderMutResults(aRef,aTest,mutations,identity,matches){
     const rows=mutations.map(m=>`<div class="mut-list-row"><span style="font-family:var(--mono);color:var(--muted);">${m.pos}</span><span><span class="mut-type-badge ${bC[m.type]}"><i class="fas ${bI[m.type]}"></i> ${m.type}</span></span><span style="font-family:var(--mono);color:var(--a);">${m.ref}</span><span style="font-family:var(--mono);color:var(--g);">${m.test}</span><span style="color:var(--muted);font-size:.85em;">${m.type==='substitution'?'Point mutation':m.type==='insertion'?'Base inserted':'Base deleted'}</span></div>`).join('');
     mutTable=`<div class="mut-list"><div class="mut-list-header"><span>Pos</span><span>Type</span><span>Ref</span><span>Test</span><span>Note</span></div>${rows}</div>`;
   }
-  res.innerHTML=`<div class="mut-stats"><div class="mut-stat-card"><div class="stat-num stat-total">${aRef.length}</div><div class="stat-label">Aligned Length</div></div><div class="mut-stat-card"><div class="stat-num stat-match">${matches}</div><div class="stat-label">Matches</div></div><div class="mut-stat-card"><div class="stat-num stat-sub">${subs}</div><div class="stat-label">Substitutions</div></div><div class="mut-stat-card"><div class="stat-num stat-ins">${ins}</div><div class="stat-label">Insertions</div></div><div class="mut-stat-card"><div class="stat-num stat-del">${del}</div><div class="stat-label">Deletions</div></div></div><div class="identity-bar-wrap"><div class="identity-bar-label"><span>Sequence Identity</span><span>${identity}%</span></div><div class="identity-bar-track"><div class="identity-bar-fill" style="width:${identity}%;background:${barColor};"></div></div></div><div class="alignment-viewer"><div class="alignment-title">Pairwise Alignment (Needleman-Wunsch) — <span style="color:var(--a);">red = mutation</span></div><div class="aln-row"><span class="aln-label">Reference</span><div class="aln-seq">${refRow}</div></div><div class="aln-row"><span class="aln-label" style="font-size:.7em;">Match</span><div style="display:flex;flex-wrap:wrap;gap:2px;">${matchRow}</div></div><div class="aln-row"><span class="aln-label" style="color:var(--danger);">Test</span><div class="aln-seq">${testRow}</div></div></div>${mutTable}`;
+  res.innerHTML=`<div class="mut-stats"><div class="mut-stat-card"><div class="stat-num stat-total">${aRef.length}</div><div class="stat-label">Aligned Length</div></div><div class="mut-stat-card"><div class="stat-num stat-match">${matches}</div><div class="stat-label">Matches</div></div><div class="mut-stat-card"><div class="stat-num stat-sub">${subs}</div><div class="stat-label">Substitutions</div></div><div class="mut-stat-card"><div class="stat-num stat-ins">${ins}</div><div class="stat-label">Insertions</div></div><div class="mut-stat-card"><div class="stat-num stat-del">${del}</div><div class="stat-label">Deletions</div></div></div><div class="identity-bar-wrap"><div class="identity-bar-label"><span>Sequence Identity</span><span>${identity}%</span></div><div class="identity-bar-track"><div class="identity-bar-fill" style="width:${identity}%;background:${barColor};"></div></div></div><div class="alignment-viewer"><div class="alignment-title">Pairwise Alignment (Needleman-Wunsch) — <span style="color:var(--a);">red = mutation</span></div><div class="aln-row"><span class="aln-label">Reference</span><div class="aln-seq">${refRow}</div></div><div class="aln-row"><span class="aln-label" style="font-size:.7em;">Match</span><div style="display:flex;flex-wrap:wrap;gap:2px;">${matchRow}</div></div><div class="aln-row"><span class="aln-label" style="color:var(--danger);">Test</span><div class="aln-seq">${testRow}</div></div></div>${mutTable}
+  <div class="ai-section">
+    <button class="ai-ask-btn" id="ai-ask-btn" onclick="getAIInterpretation()">
+      <i class="fas fa-robot"></i> Ask AI — Interpret These Mutations
+    </button>
+    <div class="ai-panel" id="ai-panel">
+      <div class="ai-panel-header">
+        <span><i class="fas fa-robot"></i> AI Clinical Interpretation</span>
+        <span class="ai-model-tag">gpt-4o-mini</span>
+      </div>
+      <div class="ai-response" id="ai-response-text"></div>
+    </div>
+  </div>`;
+}
+
+async function getAIInterpretation(){
+  if(!lastAnalysis) return;
+  const btn=document.getElementById('ai-ask-btn');
+  const panel=document.getElementById('ai-panel');
+  const textEl=document.getElementById('ai-response-text');
+  btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Generating…';
+  panel.style.display='block';
+  textEl.textContent='';
+
+  const {ref,test,mutations,identity}=lastAnalysis;
+  const mutSummary=mutations.length===0
+    ?'No mutations found — sequences are identical.'
+    :mutations.map(m=>`Position ${m.pos}: ${m.type} (${m.ref}→${m.test})`).join('; ');
+
+  const userPrompt=`A student ran a Needleman-Wunsch alignment on two DNA sequences.
+
+Reference: ${ref}
+Test (patient): ${test}
+Sequence identity: ${identity}%
+Mutations: ${mutSummary}
+
+Please provide:
+1. 🔬 Plain-language explanation of what these mutations mean biologically
+2. 🧬 Which real genetic condition this pattern might resemble (if any)
+3. 📚 An educational insight about this mutation type
+4. 💡 A thought-provoking follow-up question for the student
+
+Keep it friendly, educational, and under 220 words. Use emoji headings.`;
+
+  try {
+    const res=await fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${OPENAI_KEY}`},
+      body:JSON.stringify({
+        model:'gpt-4o-mini',
+        messages:[
+          {role:'system',content:'You are a friendly bioinformatics tutor helping students understand DNA mutations. Be clear, engaging, and educational.'},
+          {role:'user',content:userPrompt}
+        ],
+        stream:true,
+        max_tokens:400,
+        temperature:0.7
+      })
+    });
+
+    if(!res.ok){
+      const err=await res.json();
+      textEl.textContent=`Error: ${err.error?.message||res.statusText}`;
+      return;
+    }
+
+    const reader=res.body.getReader();
+    const decoder=new TextDecoder();
+    let buf='';
+    while(true){
+      const {done,value}=await reader.read();
+      if(done) break;
+      buf+=decoder.decode(value,{stream:true});
+      const lines=buf.split('\n');
+      buf=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: ')) continue;
+        const data=line.slice(6);
+        if(data==='[DONE]') break;
+        try{
+          const chunk=JSON.parse(data).choices?.[0]?.delta?.content;
+          if(chunk) textEl.textContent+=chunk;
+        }catch(e){}
+      }
+    }
+    score+=10;updateScore();showToast('AI Analysis done! +10','fa-robot');
+  } catch(e){
+    textEl.textContent=`Connection error: ${e.message}`;
+  } finally {
+    btn.disabled=false;
+    btn.innerHTML='<i class="fas fa-robot"></i> Ask AI Again';
+  }
 }
 
 /* ─────────────────────────────────────────
